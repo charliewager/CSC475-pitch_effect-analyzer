@@ -1,47 +1,70 @@
-# Pitch Effect Analyzer Plugin
+# PITCH EFFECT ANALYSER
 
-This plugin is being created as a class project for the CSC475 course at the University of Victoria.
-The goal of this plugin is to create a DAW plugin to apply a pitch based audio effect and analyze both the input and output.
-This pitch based effect could be chorus, phaser, flanger, or harmonizer depending on what the project group is most interested in (can be multiple effects - time permitting).
-The analysis would entail determining the frequency spectrum and the chord/note of both the input and the output signals.
-This would serve to show how the applied effect alters the frequency content of the signal.
-Additionally, functionality could be added to allow the plugin to fill out the frequency spectrum based on the frequency content of the output signal.
+Charlie Wager V00959352
 
-## Installation
+## Abstract
 
-No installation media has been created for this plugin yet, but it will be available soon.
+Please find startup instructions for developers in the startup_instructions.md file.
 
-To build this project yourself, do the following. Ensure that Visual Studio 2022 is installed for C++ development. Ensure that JUCE version 8.0.3 is installed. A tutorial to setup JUCE for Windows can be found in this video: https://www.youtube.com/watch?v=Mo0Oco3Vimo&pp=ygUHI2p1Y2V2Nw%3D%3D between timestamps 22:40 – 45:49. Once this is set up simply open the 484Compressor.jucer file in the Projucer application and click "Save and open in IDE". Once the Visual Studio IDE opens set the 484Compressor_VST3 solution as the startup project and build the solution. The solution can be built by navigating to the "Build" tab and clicking "Build Solution" or using the keyboard shortcut Ctrl+Shift+B. Building this project should copy the files to the proper directory. If any errors occur with copying the files it is most likely due to the permissions of the folder, these errors can be remedied by setting the permissions as done in the video above.
+## 1. INTRODUCTION AND PROJECT DESCRIPTION
 
-## How to Use
+Pitch-based audio effects are a core part of modern music production. Effects such as chorus, flanger, phaser, and harmonizer can significantly alter the sound of an instrument, yet producers typically rely on listening alone to understand what these effects are doing to the signal [1].
 
-Following the previously mentioned video should set up any machine to run and test this plugin using the .filtergraph file and the AudioPluginHost. This does require the CSC475-pitch_effect-analyzer_VST3 to be configured properly (as shown in the videos) and to be set as the Startup Project.
+At the same time, music information retrieval (MIR) research has produced many reliable methods for frequency analysis, pitch tracking, and chord recognition [2]. These methods are usually applied offline or in analysis tools, rather than being integrated directly into creative audio software.
 
-Currently plugin project has been initialized but no work has been done to add any functionality. This work will take place over the next 3 months.
+This project aims to bridge that gap. We explore how MIR techniques can be embedded into a DAW plugin to analyze and visualize the impact of pitch-based effects in real time [3]. By comparing the input and output signals, users can better understand how an effect changes the harmonic structure of their audio.
 
-## System Requirements - Initial (May be changed as further testing occurs)
+## 2. OBJECTIVES AND TIMELIME
 
-- **Operating System**: Windows 10+
-- **DAW Compatibility**: Supports VST3 format.
-- **Processor**: Dual-core CPU or better.
-- **RAM**: 4 GB or more recommended.
+The objective of this project is to build a DAW plugin that applies a pitch based audio effect and analyzes how the effect changes the signal. The plugin will compare the input and output audio by visualizing their frequency content and identifying the chord or note present, helping users better understand how pitch based effects alter sound.
 
-## License
+The project will progress in clear stages. By the middle of February, the first pitch based audio effect will be implemented and working in real time. By the end of February, frequency analysis will be added along with spectrograms for both the input and output signals. By the middle of March, the user interface will be refined and finalized, with additional effects added if time permits. By the end of March, chord and note recognition will be completed and integrated, followed by final testing and polish.
 
-484Compressor is free to use for personal and commercial projects. Redistribution or modification of the plugin is subject to the terms of the LICENSE file.
+## 3. TEAM MEMBER ROLES
 
-## Acknowledgments
+Charlie will focus on developing the pitch based audio effect and will act as the technical supervisor, helping guide overall implementation decisions and integration.
 
-This plugin was developed using the [JUCE framework](https://juce.com), which powers countless professional-grade audio tools.
-This plugin was developed using algorithms and principles derived from the following textbooks:
+Owen and Connor will work together on the chord recognition component, including note detection and mapping the detected pitches to chords.
 
-- **"Audio Effects: Theory, Implementation and Application" by Joshua D. Reiss and Andrew P. McPherson**: This book provided foundational concepts and advanced techniques for implementing audio effects.
-- **"DAFX: Digital Audio Effects" by Udo Zölzer**: A comprehensive resource that informed the design and implementation of both the compressor and distortion effects.
+Armaan will be responsible for building the spectrogram visualization and the related GUI elements for displaying the input and output analysis.
 
-## Contact
+While each member has a primary focus, the project will be collaborative. Everyone will contribute across areas and help each other as needed.
 
-For feedback, suggestions, or issues, please reach out to charlie.wagerr@gmail.com.
+## 3.1. Charlie Wager
 
-## Note
+- P1 (basic): intitialize JUCE plugin and ensure all group members can run the plugin
+- P2 (expected): implement a chorus effect
+- P3 (advanced): add multiple voices to chorus effect
+- P4 (advanced): implement a second pitch-based audio effect
 
-This plugin is built with JUCE version 8.0.3 and is currently only tested for Windows machines, if you would like to clone this and build it yourself please ensure that version 8.0.3 of JUCE is installed and a Windows machine is used in order to avoid errors.
+## 4. TOOL DESCRIPTION
+
+We will use C++ and the JUCE framework to develop this project. JUCE is a C++ framework for developing VST and AU audio plugins. The JUCE framework contains built-in functions for digital signal processing (DSP), including FFT, convolution, windowing, filtering and delay functions (cite JUCE docs for dsp). In addition to this JUCE provides tools for creating GUIs and project generation via Projucer or CMake. Any DSP functions or audio effects that are needed and not provided as functions by the JUCE framework will be implemented using information from the following textbooks: Designing Audio Effect Plugins in C++[4], DAFX[1], and Audio effects theory, implementation and application [5].
+
+For the purposes of this project and for ease of development, the Visual Studio, or XCode programs with Projucer will be used to generate, build, and debug the VST plugin. The use of XCode or Visual Studio will be dependent on the individual operating system, as Visual Studio is not available on MacOS.
+
+Projucer is JUCE’s graphical project management tool that lets you create and configure JUCE‑based applications and plug‑ins, then export platform‑specific IDE projects (Xcode, Visual Studio, Makefiles) for building and debugging.
+
+Initial development level testing and debugging will be completed using the AudioPluginHost from JUCE. AudioPluginHost is a lightweight JUCE‑based host application included with the framework that you compile and then use to load, connect, and test audio plug‑ins (including your own) without needing a full DAW. Final testing of each feature will be completed in DAWs chosen by the project group. Preliminarily, these DAWs will be chosen as Audacity, FL Studio, and Logic Pro as the project group has pre-existing access and experience with these.
+
+## 5. DATA SET DESCRIPTION
+
+The main “data set” that will be used to test the audio effect and frequency spectrum analysis will be live audio generated by the project group. This live audio will be generated either through playing instruments, such as a guitar, and routing this audio into a DAW or by using a software instrument inside a DAW.
+
+The main data set that will be used to test the chord recognition algorithm will be sets of audio with chord annotations such as isophonics (found here: http://isophonics.net/content/reference-annotations-beatles), Chordify (found here: https://github.com/chordify/CASD), Choco (found here: https://github.com/smashub/choco), and the Jazz Audio Aligned Harmony Dataset (found here: https://github.com/MTG/JAAH). The final, and most rigorous, test of the chord recognition algorithm will use live audio. Just as with the “data set” for testing the audio effect and frequency spectrum analysis, this will be in the form of a guitar or other instrument that is routed into a DAW. The difference between this “data set” and that mentioned above is that, in this “data set”, the instrument will only ever play chords.
+
+## 6. ASSOCIATED WORK AND LITERATURE
+
+TODO
+
+## 7. REFERENCES
+
+[1]U. Zolzer, “DAFX -Digital Audio Effects DAFX: Digital Audio Effects.” Available: http://oeyvind.teks.no/ftp/Projects/Projects/writings/2015/DAFx/ref/dafx_book.pdf
+
+[2]L. Oudre, Y. Grenier, and C. Févotte, “TEMPLATE-BASED CHORD RECOGNITION : INFLUENCE OF THE CHORD TYPES,” 2009. Accessed: Jan. 28, 2026. [Online]. Available: https://ismir2009.ismir.net/proceedings/PS1-17.pdf
+
+[3]D. Stefani and L. Turchet, “On the Challenges of Embedded Real-time Music Information Retrieval Augmentation of Traditional Italian Instruments View project Real-time detection of symbolic monophonic musical patterns View project ON THE CHALLENGES OF EMBEDDED REAL-TIME MUSIC INFORMATION RETRIEVAL,” 2022. Accessed: Jan. 28, 2026. [Online]. Available: http://www.lucaturchet.it/PUBLIC_DOWNLOADS/publications/conferences/On_the_Challenges_of_Embedded_Real-Time_Music_Information_Retrieval.pdf
+
+[4] W. C. Pirkle, Designing Audio Effect Plugins in C++. Routledge, 2019.
+
+[5] J. D. Reiss and A. P. Mcpherson, Audio effects theory, implementation and application. Boca Raton London New York Crc Press, Taylor & Francis Group, 2015.
