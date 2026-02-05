@@ -46,6 +46,22 @@ While each member has a primary focus, the project will be collaborative. Everyo
   - P4 (advanced): add complexity to the second effect.
   - P5 (advanced): add a third pitch-based audio effect.
 
+## 3.3. Armaan Chhina
+- Objective (implement a real-time spectrogram visualization for input and output audio in a JUCE     plugin)
+  - PI1 (basic): compute and display a real-time FFT magnitude spectrum for the input signal  
+  - PI2 (basic): compute and display a real-time FFT magnitude spectrum for the output signal  
+  - PI3 (expected): implement a scrolling spectrogram view showing frequency content over time  
+  - PI4 (expected): validate spectrogram accuracy using test tones and live instrument input  
+  - PI5 (advanced): add frequency labels and peak highlighting to improve interpretability  
+
+- Objective (ensure spectrogram performance and stability in real-time audio environments)
+  - PI1 (basic): transfer audio data from the audio thread to the GUI thread without blocking  
+  - PI2 (basic): ensure the spectrogram runs in real time at standard buffer sizes and sample rates  
+  - PI3 (expected): test spectrogram behavior across multiple DAWs  
+  - PI4 (expected): evaluate CPU usage and optimize FFT and rendering where needed  
+  - PI5 (advanced): implement a freeze or snapshot feature to capture spectrogram output  
+
+
 ## 4. TOOL DESCRIPTION
 
 We will use C++ and the JUCE framework to develop this project. JUCE is a C++ framework for developing VST and AU audio plugins. The JUCE framework contains built-in functions for digital signal processing (DSP), including FFT, convolution, windowing, filtering and delay functions (cite JUCE docs for dsp). In addition to this JUCE provides tools for creating GUIs and project generation via Projucer or CMake. Any DSP functions or audio effects that are needed and not provided as functions by the JUCE framework will be implemented using information from the following textbooks: Designing Audio Effect Plugins in C++[4], DAFX[1], and Audio effects theory, implementation and application [5].
