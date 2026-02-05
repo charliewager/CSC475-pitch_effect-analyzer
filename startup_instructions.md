@@ -21,7 +21,7 @@ Currently plugin project has been initialized but no work has been done to add a
 
 ## System Requirements - Initial (May be changed as further testing occurs)
 
-- **Operating System**: Windows 10+
+- **Operating System**: Windows 10+, or MacOS
 - **DAW Compatibility**: Supports VST3 format.
 - **Processor**: Dual-core CPU or better.
 - **RAM**: 4 GB or more recommended.
