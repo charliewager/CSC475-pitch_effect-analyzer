@@ -1,6 +1,7 @@
 # PITCH EFFECT ANALYSER
 
 Charlie Wager V00959352
+Connor Newbery V00921506
 
 ## Abstract
 
