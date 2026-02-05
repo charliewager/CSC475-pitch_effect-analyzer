@@ -61,7 +61,21 @@ While each member has a primary focus, the project will be collaborative. Everyo
   - PI4 (expected): evaluate CPU usage and optimize FFT and rendering where needed  
   - PI5 (advanced): implement a freeze or snapshot feature to capture spectrogram output  
 
-
+## 3.4 Connor Newbery
+- Objective: Read associated literature
+  - P1 (basic): Look for non machine learning algorithms.
+  - P2 (basic): Read non-machine learning algorithms.
+  - P3 (expected): Find machine learning algorithms.
+  - P4 (advanced): Read Machine Learning.
+  - P5 (advanced): AI applications.
+ 
+- Objective: Design Chord Recognition Algorithm
+  - P1 (basic): Determine most effective algorithms from literature.
+  - P2 (basic): Distill theoretical concepts, determine which are most applicable for our purposes.
+  - P3 (expected): Basic implementations of algorithms from literature.
+  - P4 (advanced): Customize algorithms.
+  - P5 (advanced): Implement test version (proof of concept) / Pass on to owen.
+ 
 ## 4. TOOL DESCRIPTION
 
 We will use C++ and the JUCE framework to develop this project. JUCE is a C++ framework for developing VST and AU audio plugins. The JUCE framework contains built-in functions for digital signal processing (DSP), including FFT, convolution, windowing, filtering and delay functions (cite JUCE docs for dsp). In addition to this JUCE provides tools for creating GUIs and project generation via Projucer or CMake. Any DSP functions or audio effects that are needed and not provided as functions by the JUCE framework will be implemented using information from the following textbooks: Designing Audio Effect Plugins in C++[4], DAFX[1], and Audio effects theory, implementation and application [5].
