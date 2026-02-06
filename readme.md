@@ -52,18 +52,18 @@ While each member has a primary focus, the project will be collaborative. Everyo
 
 ## 3.2. Owen O'Keefe
 - Objective: Implement Chord Recognition model
-- P1 (basic): evaluate tensorflow's feasibility for this project for chord recognition
-- P2 (expected): learn tensorflow and how we can implement it for the chord recognition
-- P3 (expected): train and test model
-- P4 (advanced): fully implement model
-- P5 (advanced): evaluate accuracy of model
+  - P1 (basic): evaluate tensorflow's feasibility for this project for chord recognition
+  - P2 (expected): learn tensorflow and how we can implement it for the chord recognition
+  - P3 (expected): train and test model
+  - P4 (advanced): fully implement model
+  - P5 (advanced): evaluate accuracy of model
 
 - Objective: Learn Tensorflow
-- P1 (basic): learn tensorflow in C++
-- P2 (basic): learn how to use TensorFlow for chord recognition
-- P3 (expected): learn optimization techniques
-- P4 (advanced): implement optimization techniques
-- P5 (advanced): test and check the chord recogntiion code
+  - P1 (basic): learn tensorflow in C++
+  - P2 (basic): learn how to use TensorFlow for chord recognition
+  - P3 (expected): learn optimization techniques
+  - P4 (advanced): implement optimization techniques
+  - P5 (advanced): test and check the chord recogntion code
 
 ## 3.3. Armaan Chhina
 - Objective (implement a real-time spectrogram visualization for input and output audio in a JUCE     plugin)
