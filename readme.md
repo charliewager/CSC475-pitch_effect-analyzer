@@ -113,15 +113,23 @@ The main data set that will be used to test the chord recognition algorithm will
 
 ## 6. ASSOCIATED WORK AND LITERATURE
 
-J. Osmalsky, J.-J. Embrechts, V. D. Marc, and S. Pierard, “Neural networks for musical chords recognition,” May 01, 2012. https://orbi.uliege.be/handle/2268/115963#details 
-M. McVicar, Y. Ni, R. Santos-Rodriguez, and T. De Bie, “Using online chord databases to enhance chord recognition,” Journal of New Music Research, vol. 40, no. 2, pp. 139–152, Jun. 2011, doi: 10.1080/09298215.2011.573564. 
-N. Boulanger-Lewandowski Jr., Y. Bengio, P. Vincent, and Dept. IRO, Universit´e de Montr´eal, “AUDIO CHORD RECOGNITION WITH RECURRENT NEURAL NETWORKS,” Dept. IRO, Universit´E De Montr´Eal, 2013, [Online]. Available: https://ismir2013.ismir.net/wp-content/uploads/2013/09/243_Paper.pdf 
-“A fully convolutional deep auditory model for musical chord recognition,” IEEE Conference Publication | IEEE Xplore, Sep. 01, 2016. https://ieeexplore.ieee.org/abstract/document/7738895 
-K. Lee, “Automatic Chord Recognition from Audio Using Enhanced Pitch Class Profile,” journal-article. [Online]. Available: https://ccrma.stanford.edu/~kglee/pubs/klee-icmc06.pdf 
-“Chord recognition using measures of fit, chord templates and filtering methods,” IEEE Conference Publication | IEEE Xplore, Oct. 01, 2009. https://ieeexplore.ieee.org/abstract/document/5346546 
-“MINIMUM CLASSIFICATION ERROR TRAINING TO IMPROVE ISOLATED CHORD RECOGNITION,” 2009. [Online]. Available: https://archives.ismir.net/ismir2009/paper/000119.pdf 
-L. Oudre, “Template-based chord recognition from audio signals,” Nov. 03, 2010. https://theses.hal.science/tel-00559008/ 
-“Probabilistic Template-Based chord recognition,” IEEE Journals & Magazine | IEEE Xplore, Nov. 01, 2011. https://ieeexplore.ieee.org/abstract/document/5664772
+[1] J. Osmalsky, J.-J. Embrechts, V. D. Marc, and S. Pierard, “Neural networks for musical chords recognition,” May 01, 2012. https://orbi.uliege.be/handle/2268/115963#details 
+
+[2] M. McVicar, Y. Ni, R. Santos-Rodriguez, and T. De Bie, “Using online chord databases to enhance chord recognition,” Journal of New Music Research, vol. 40, no. 2, pp. 139–152, Jun. 2011, doi: 10.1080/09298215.2011.573564.
+ 
+[3] N. Boulanger-Lewandowski Jr., Y. Bengio, P. Vincent, and Dept. IRO, Universit´e de Montr´eal, “AUDIO CHORD RECOGNITION WITH RECURRENT NEURAL NETWORKS,” Dept. IRO, Universit´E De Montr´Eal, 2013, [Online]. Available: https://ismir2013.ismir.net/wp-content/uploads/2013/09/243_Paper.pdf 
+
+[4] “A fully convolutional deep auditory model for musical chord recognition,” IEEE Conference Publication | IEEE Xplore, Sep. 01, 2016. https://ieeexplore.ieee.org/abstract/document/7738895 
+
+[5] K. Lee, “Automatic Chord Recognition from Audio Using Enhanced Pitch Class Profile,” journal-article. [Online]. Available: https://ccrma.stanford.edu/~kglee/pubs/klee-icmc06.pdf 
+
+[6] “Chord recognition using measures of fit, chord templates and filtering methods,” IEEE Conference Publication | IEEE Xplore, Oct. 01, 2009. https://ieeexplore.ieee.org/abstract/document/5346546 
+
+[7] “MINIMUM CLASSIFICATION ERROR TRAINING TO IMPROVE ISOLATED CHORD RECOGNITION,” 2009. [Online]. Available: https://archives.ismir.net/ismir2009/paper/000119.pdf 
+
+[8] L. Oudre, “Template-based chord recognition from audio signals,” Nov. 03, 2010. https://theses.hal.science/tel-00559008/ 
+
+[9] “Probabilistic Template-Based chord recognition,” IEEE Journals & Magazine | IEEE Xplore, Nov. 01, 2011. https://ieeexplore.ieee.org/abstract/document/5664772
 ## 7. REFERENCES
 
 [1]U. Zolzer, “DAFX -Digital Audio Effects DAFX: Digital Audio Effects.” Available: http://oeyvind.teks.no/ftp/Projects/Projects/writings/2015/DAFx/ref/dafx_book.pdf
