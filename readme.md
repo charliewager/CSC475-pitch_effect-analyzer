@@ -82,14 +82,14 @@ While each member has a primary focus, the project will be collaborative. Everyo
 
 ## 3.4 Connor Newbery
 - Objective: Read associated literature
-  - P1 (basic): Look for non machine learning algorithms.
-  - P2 (basic): Read non-machine learning algorithms.
-  - P3 (expected): Find machine learning algorithms.
-  - P4 (advanced): Read Machine Learning.
-  - P5 (advanced): AI applications.
+  - P1 (basic): Collect literature related to non-machine learning algorithms for chord recognition.
+  - P2 (basic): Read and synthesize findings on non-machine learning algorithms.
+  - P3 (expected): Collect literature related to machine learning algorithms for chord recognition.
+  - P4 (advanced): Read and synthesize findings on machine learning algorithms.
+  - P5 (advanced): Determine most effective algorithms from literature.
  
 - Objective: Design Chord Recognition Algorithm
-  - P1 (basic): Determine most effective algorithms from literature.
+  - P1 (basic): Set up environment and determine appropriate languages and frameworks for test-algorithm development.
   - P2 (basic): Distill theoretical concepts, determine which are most applicable for our purposes.
   - P3 (expected): Basic implementations of algorithms from literature.
   - P4 (advanced): Customize algorithms.
@@ -113,6 +113,7 @@ The main data set that will be used to test the chord recognition algorithm will
 
 ## 6. ASSOCIATED WORK AND LITERATURE
 
+
 [1] J. Osmalsky, J.-J. Embrechts, V. D. Marc, and S. Pierard, “Neural networks for musical chords recognition,” May 01, 2012. https://orbi.uliege.be/handle/2268/115963#details 
 
 [2] M. McVicar, Y. Ni, R. Santos-Rodriguez, and T. De Bie, “Using online chord databases to enhance chord recognition,” Journal of New Music Research, vol. 40, no. 2, pp. 139–152, Jun. 2011, doi: 10.1080/09298215.2011.573564.
@@ -130,6 +131,8 @@ The main data set that will be used to test the chord recognition algorithm will
 [8] L. Oudre, “Template-based chord recognition from audio signals,” Nov. 03, 2010. https://theses.hal.science/tel-00559008/ 
 
 [9] “Probabilistic Template-Based chord recognition,” IEEE Journals & Magazine | IEEE Xplore, Nov. 01, 2011. https://ieeexplore.ieee.org/abstract/document/5664772
+
+
 ## 7. REFERENCES
 
 [1]U. Zolzer, “DAFX -Digital Audio Effects DAFX: Digital Audio Effects.” Available: http://oeyvind.teks.no/ftp/Projects/Projects/writings/2015/DAFx/ref/dafx_book.pdf
