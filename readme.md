@@ -8,7 +8,7 @@ Owen O'Keefe V01008501
 
 ## Abstract
 
-Please find startup instructions for developers in the startup_instructions.md file.
+This project develops a real-time DAW plugin that combines a chorus effect with built-in pitch and chord analysis. Using the JUCE framework in C++, the plugin visualizes how the chorus effect alters the harmonic and frequency content of an input signal. By comparing the input and output through spectrograms and chord recognition, users gain a clearer understanding of how pitch-based modulation shapes sound. The system draws on music information retrieval (MIR) techniques to bridge the gap between audio effect design and real-time musical analysis, offering both a creative and educational tool for music producers.
 
 ## 1. INTRODUCTION AND PROJECT DESCRIPTION
 
