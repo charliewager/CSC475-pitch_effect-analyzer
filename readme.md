@@ -113,6 +113,7 @@ The main data set that will be used to test the chord recognition algorithm will
 
 ## 6. ASSOCIATED WORK AND LITERATURE
 
+The following list of references are some of the research articles we will be using for determining the appropriate chord recognition algorithms to implement. Some of these articles may not be referenced in our final report, and some articles that have not been listed here may appear later on as we do more research on the topic.
 
 [1] J. Osmalsky, J.-J. Embrechts, V. D. Marc, and S. Pierard, “Neural networks for musical chords recognition,” May 01, 2012. https://orbi.uliege.be/handle/2268/115963#details 
 
@@ -132,6 +133,17 @@ The main data set that will be used to test the chord recognition algorithm will
 
 [9] “Probabilistic Template-Based chord recognition,” IEEE Journals & Magazine | IEEE Xplore, Nov. 01, 2011. https://ieeexplore.ieee.org/abstract/document/5664772
 
+[10] Z. Rao, X. Guan, and J. Teng, “Chord Recognition Based on Temporal Correlation Support Vector Machine,” Applied sciences, vol. 6, no. 5, p. 157, 2016, doi: 10.3390/app6050157.
+
+[11] K. Noland and M. Sandler, “Influences of Signal Processing, Tone Profiles, and Chord Progressions on a Model for Estimating the Musical Key from Audio,” Computer music journal, vol. 33, no. 1, pp. 42–56, 2009, doi: 10.1162/comj.2009.33.1.42.
+
+[12] F. Korzeniowski and G. Widmer, “A Fully Convolutional Deep Auditory Model for Musical Chord Recognition,” 2016, doi: 10.48550/arxiv.1612.05082.
+
+[13] L. Oudre, C. Fevotte, and Y. Grenier, “Probabilistic Template-Based Chord Recognition,” IEEE transactions on audio, speech, and language processing, vol. 19, no. 8, pp. 2249–2259, 2011, doi: 10.1109/TASL.2010.2098870.
+
+[14] D. Wei, “Keynote-Dependent HMM Based Musical Chord Recognition Method,” Journal of software, vol. 8, no. 4, pp. 916–916, 2013, doi: 10.4304/jsw.8.4.916-923.
+
+[15] R. Hernández, A. Guerrero, and J. E. Macías-Díaz, “A template-based algorithm by geometric means for the automatic and efficient recognition of music chords,” Evolutionary intelligence, vol. 17, no. 1, pp. 467–481, 2024, doi: 10.1007/s12065-022-00771-6.
 
 ## 7. REFERENCES
 
