@@ -17,6 +17,7 @@ CSC475pitch_effectanalyzerAudioProcessorEditor::CSC475pitch_effectanalyzerAudioP
     // editor's size to whatever you need it to be.
     addAndMakeVisible(inputSpectrum);
     setSize(600, 400);
+    startTimerHz(30);
 
 }
 
@@ -41,4 +42,11 @@ void CSC475pitch_effectanalyzerAudioProcessorEditor::resized()
     // subcomponents in your editor..
     inputSpectrum.setBounds(getLocalBounds().reduced(20));
 
+}
+
+void CSC475pitch_effectanalyzerAudioProcessorEditor::timerCallback()
+{
+  auto lv = audioProcessor.inputRms.load(std::memory_order_relaxed);
+  DBG("RMS: " << lv);
+  inputSpectrum.setLevel(lv);
 }

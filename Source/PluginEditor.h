@@ -16,7 +16,7 @@
 //==============================================================================
 /**
 */
-class CSC475pitch_effectanalyzerAudioProcessorEditor  : public juce::AudioProcessorEditor
+class CSC475pitch_effectanalyzerAudioProcessorEditor  : public juce::AudioProcessorEditor, private juce::Timer
 {
 public:
     CSC475pitch_effectanalyzerAudioProcessorEditor (CSC475pitch_effectanalyzerAudioProcessor&);
@@ -31,6 +31,7 @@ private:
     // access the processor object that created it.
     CSC475pitch_effectanalyzerAudioProcessor& audioProcessor;
     SpectrumComponent inputSpectrum;
+    void timerCallback() override;
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CSC475pitch_effectanalyzerAudioProcessorEditor)

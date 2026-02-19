@@ -144,6 +144,23 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
+    if (totalNumInputChannels > 0)
+    {
+        auto* x = buffer.getReadPointer(0);
+        auto n = buffer.getNumSamples();
+
+        double sumSquares = 0.0;
+        for (int i = 0; i < n; ++i){
+            sumSquares += x[i] * x[i];
+        }
+
+        auto rms = std::sqrt(sumSquares / (double) n);
+        inputRms.store((float) rms, std::memory_order_relaxed);
+    }
+    else 
+    {
+        inputRms.store(0.0f, std::memory_order_relaxed);
+    }
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
     // Make sure to reset the state if your inner loop is processing
@@ -156,6 +173,10 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
 
         // ..do something to the data...
     }
+    DBG("inCh=" << getTotalNumInputChannels()
+    << " outCh=" << getTotalNumOutputChannels()
+    << " n=" << buffer.getNumSamples());
+
 }
 
 //==============================================================================

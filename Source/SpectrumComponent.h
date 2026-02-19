@@ -1,25 +1,45 @@
 #pragma once
 #include <JuceHeader.h>
 
-class SpectrumComponent : public juce::Component,
-                          private juce::Timer
+class SpectrumComponent : public juce::Component
 {
 public:
-    SpectrumComponent() { startTimerHz(60); }
+    void setLevel(float newLevel)
+    {
+        level.store(newLevel, std::memory_order_relaxed);
+        repaint();
+    }
 
     void paint(juce::Graphics& g) override
     {
         g.fillAll(juce::Colours::black);
 
-        auto r = getLocalBounds().toFloat();
-        g.setColour(juce::Colours::white);
-        g.drawRect(r, 1.0f);
+        auto bounds = getLocalBounds().toFloat();
 
-        // placeholder line (we'll replace with FFT)
-        g.drawLine(r.getX(), r.getCentreY(), r.getRight(), r.getCentreY(), 2.0f);
+        // Border
+        g.setColour(juce::Colours::white);
+        g.drawRect(bounds, 1.0f);
+
+        float lv = level.load(std::memory_order_relaxed);
+
+        // Map RMS to visible range
+        float norm = juce::jlimit(0.0f, 1.0f, lv * 5.0f);  
+        // multiply to exaggerate small RMS values
+
+        float height = norm * bounds.getHeight();
+
+        g.setColour(juce::Colours::limegreen);
+        g.fillRect(bounds.withY(bounds.getBottom() - height)
+                          .withHeight(height));
+
+        g.setColour(juce::Colours::white);
+        g.drawText("RMS: " + juce::String(lv, 4),
+                   getLocalBounds().reduced(10),
+                   juce::Justification::topLeft);
     }
 
 private:
-    void timerCallback() override { repaint(); }
+    std::atomic<float> level { 0.0f };
 };
+
 

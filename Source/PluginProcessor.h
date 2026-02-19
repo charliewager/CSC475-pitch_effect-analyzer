@@ -29,6 +29,7 @@ public:
    #endif
 
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+    std::atomic<float> inputRms { 0.0f };
 
     //==============================================================================
     juce::AudioProcessorEditor* createEditor() override;
