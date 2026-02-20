@@ -22,6 +22,18 @@ CSC475pitch_effectanalyzerAudioProcessor::CSC475pitch_effectanalyzerAudioProcess
                        )
 #endif
 {
+    // initialize param pointers
+    rate = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("rate"));
+    // assert param is not null
+    jassert(rate != nullptr);
+
+    depth = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("depth"));
+    // assert param is not null
+    jassert(depth != nullptr);
+
+    feedback = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("feedback"));
+    // assert param is not null
+    jassert(feedback != nullptr);
 }
 
 CSC475pitch_effectanalyzerAudioProcessor::~CSC475pitch_effectanalyzerAudioProcessor()
@@ -95,6 +107,12 @@ void CSC475pitch_effectanalyzerAudioProcessor::prepareToPlay (double sampleRate,
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+    //juce::dsp::ProcessSpec spec = juce::dsp::ProcessSpec{ sampleRate, (uint32)samplesPerBlock, getTotalNumOutputChannels() };
+    juce::dsp::ProcessSpec spec;
+    spec.maximumBlockSize = samplesPerBlock;
+    spec.numChannels = getTotalNumOutputChannels();
+    spec.sampleRate = sampleRate;
+    chorus.prepare(spec);
 }
 
 void CSC475pitch_effectanalyzerAudioProcessor::releaseResources()
@@ -146,16 +164,15 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
+    chorus.setRate(rate->get());
+    chorus.setDepth(depth->get());
+    chorus.setFeedback(feedback->get());
+    chorus.setMix(1.0f);
+    chorus.setCentreDelay(10.0f);
 
-        // ..do something to the data...
-    }
+    auto block = juce::dsp::AudioBlock<float>(buffer);
+    auto context = juce::dsp::ProcessContextReplacing<float>(block);
+    chorus.process(context);
 }
 
 //==============================================================================
@@ -175,12 +192,33 @@ void CSC475pitch_effectanalyzerAudioProcessor::getStateInformation (juce::Memory
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
+    juce::MemoryOutputStream mem_out(destData, true);
+    apvts.state.writeToStream(mem_out);
 }
 
 void CSC475pitch_effectanalyzerAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+    auto tree = juce::ValueTree::readFromData(data, sizeInBytes);
+    if (tree.isValid()) {
+        apvts.replaceState(tree);
+    }
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout CSC475pitch_effectanalyzerAudioProcessor::createParameterLayout() {
+    // initialize param obj
+    APVTS::ParameterLayout param_layout;
+    // use namespace to eliminate the need to type juce::
+    using namespace juce;
+
+    // add parameters
+    param_layout.add(std::make_unique<AudioParameterFloat>("rate", "Rate", NormalisableRange<float>(1.0f, 15.0f, 0.01f, 1.0f), 1));
+    param_layout.add(std::make_unique<AudioParameterFloat>("depth", "Depth", NormalisableRange<float>(0.0f, 1.0f, 0.001f, 1.0f), 0.25));
+    param_layout.add(std::make_unique<AudioParameterFloat>("feedback", "Feedback", NormalisableRange<float>(-1.0f, 1.0f, 0.001f, 1.0f), 0));
+
+    // return layout
+    return param_layout;
 }
 
 //==============================================================================

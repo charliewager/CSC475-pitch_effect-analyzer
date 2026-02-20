@@ -53,7 +53,19 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    using APVTS = juce::AudioProcessorValueTreeState;
+    static APVTS::ParameterLayout createParameterLayout();
+
+    APVTS apvts{ *this, nullptr, "Parameters", createParameterLayout() };
+
 private:
+    
+    juce::dsp::Chorus<float> chorus;
+
+    juce::AudioParameterFloat* rate{ nullptr };
+    juce::AudioParameterFloat* depth{ nullptr };
+    juce::AudioParameterFloat* feedback{ nullptr };
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CSC475pitch_effectanalyzerAudioProcessor)
 };

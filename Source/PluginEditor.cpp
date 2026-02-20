@@ -25,11 +25,11 @@ CSC475pitch_effectanalyzerAudioProcessorEditor::CSC475pitch_effectanalyzerAudioP
     addAndMakeVisible(r_label);
 
     // add attachment
-    //rateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-    //    audioProcessor.apvts,
-    //    "rate",
-    //    rate_knob
-    //);
+    rateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.apvts,
+        "rate",
+        rate_knob
+    );
 
     //depth_knob.setLookAndFeel(&m_3dKnobLook);
     //depth_knob.setTextValueSuffix("Hz");
@@ -42,11 +42,11 @@ CSC475pitch_effectanalyzerAudioProcessorEditor::CSC475pitch_effectanalyzerAudioP
     addAndMakeVisible(d_label);
 
     // add attachment
-    //depthAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-    //    audioProcessor.apvts,
-    //    "depth",
-    //    depth_knob
-    //);
+    depthAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.apvts,
+        "depth",
+        depth_knob
+    );
 
     //feedback_knob.setLookAndFeel(&m_3dKnobLook);
     feedback_knob.setTextValueSuffix("Hz");
@@ -59,11 +59,11 @@ CSC475pitch_effectanalyzerAudioProcessorEditor::CSC475pitch_effectanalyzerAudioP
     addAndMakeVisible(f_label);
 
     // add attachment
-    //feedbackAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-    //    audioProcessor.apvts,
-    //    "feedback",
-    //    feedback_knob
-    //);
+    feedbackAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.apvts,
+        "feedback",
+        feedback_knob
+    );
 
     input_lable.setText("Input Spectrum and chord", juce::dontSendNotification);
     input_lable.setJustificationType(juce::Justification::centred);

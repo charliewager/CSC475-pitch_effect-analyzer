@@ -65,7 +65,7 @@
           uiLastY_Normal="453" uiopen_Normal="0">
     <PLUGIN name="AudioFilePlayer" format="VST3" category="Fx" manufacturer="Matkat Music LLC"
             version="1.0.0" file="C:\Program Files\Common Files\VST3\AudioFilePlayer.vst3\Contents\x86_64-win\AudioFilePlayer.vst3"
-            uniqueId="79fe81c" isInstrument="0" fileTime="192fdf7160a" infoUpdateTime="19c01ed7ea1"
+            uniqueId="79fe81c" isInstrument="0" fileTime="192fdf7160a" infoUpdateTime="19c7d5188fc"
             numInputs="2" numOutputs="2" isShell="0" hasARAExtension="0"
             uid="e95d02c7"/>
     <STATE>283.VMjLgHQ....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9DiL33BTIISX1UEaho2ZVkUdAAkKAwDUigWRWkEcQ0VTucmUY4BQtnTQLolShUELhsVRxHlXMYjVmkzQgIVT5ElLzXTX0UjQYk2cvLETUo1TlAEUQ0DNpsjLEw1Xt3hKt3hKt3hKt3hKt3FUUMTUDQEdqw1XmE0UYQTQFM1YAAkKAgDUjYWQwHVdAAkKAwjKtLlKt3hKt3hKt3hYRUUSTEETIckVwTjQisVTTgkdEYDOujzPu0Fbu4VYtQmO77hUSQ0LPwVcmklaSQWXzUlO..</STATE>
@@ -82,10 +82,10 @@
           uiLastY_Normal="14" uiopen_Normal="0">
     <PLUGIN name="CSC475-pitch_effect-analyzer" format="VST3" category="Fx"
             manufacturer="UVIC CSC475" version="1.0.0" file="C:\Program Files\Common Files\VST3\CSC475-pitch_effect-analyzer.vst3\Contents\x86_64-win\CSC475-pitch_effect-analyzer.vst3"
-            uniqueId="f365dd1d" isInstrument="0" fileTime="19c01df4cb8" infoUpdateTime="19c01ed7ea2"
+            uniqueId="f365dd1d" isInstrument="0" fileTime="19c7d4eb744" infoUpdateTime="19c7d5188fd"
             numInputs="2" numOutputs="2" isShell="0" hasARAExtension="0"
             uid="e953104d"/>
-    <STATE>191.VMjLgXK....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9XCLt3hKt3hKt3hKt3hYRUUSTEETIckVwTjQisVTTgkdEYjKAQjYPQSPWgUdMcjKAQjct3hdA4hKt3hKt3hKtnTUv.UQAslXuk0UXoWUFE0YQcEV77RRC8Vav8lak4Fc9vyKVMEUy.Ea0cVZtMEcgQWY9..</STATE>
+    <STATE>366.VMjLgTV....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9DSNv3BTEwlXmAiUYoWUrIVdA4hKAwjKTETRUAUSAAkKBolQY4BQ1ETQPYUV1E0QZ4BVWgkbUcUVtPDTBQjKt3hKt3hKt3BNO4hKUAkTEQ0TtPjYt7VTF4RPtAUPrUkUYoVRVgUZyYjKwTjQgASUF4RPp4RPt3hKt3hKt3hKt3hKPUjZTEDLD4RPHAkVpEDTtXDUlI1YQcUVtf0UXIWUWkkKDAkPD4hKt3hKt3hKtrxSt3hKt3hKt3hKt3hKJUELPUTPqI1aYcEV5UkQQcVTWgkKDAkKBs1QhcVSxHlKDAkKC4BTG4hKt3hKt3hKt3FUUMTUDQEdqw1XmE0UYQTQFM1YAwyKIMzasA2atUlaz4COuX0TTMCTrU2Yo41TzEFck4C.</STATE>
     <LAYOUT>
       <INPUTS>
         <BUS index="0" layout="L R"/>
@@ -95,4 +95,8 @@
       </OUTPUTS>
     </LAYOUT>
   </FILTER>
+  <CONNECTION srcFilter="5" srcChannel="0" dstFilter="7" dstChannel="0"/>
+  <CONNECTION srcFilter="5" srcChannel="1" dstFilter="7" dstChannel="1"/>
+  <CONNECTION srcFilter="7" srcChannel="0" dstFilter="3" dstChannel="0"/>
+  <CONNECTION srcFilter="7" srcChannel="1" dstFilter="3" dstChannel="1"/>
 </FILTERGRAPH>
