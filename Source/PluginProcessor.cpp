@@ -167,8 +167,8 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
     chorus.setRate(rate->get());
     chorus.setDepth(depth->get());
     chorus.setFeedback(feedback->get());
-    chorus.setMix(1.0f);
-    chorus.setCentreDelay(10.0f);
+    chorus.setMix(0.5f);
+    chorus.setCentreDelay(7.5f);
 
     auto block = juce::dsp::AudioBlock<float>(buffer);
     auto context = juce::dsp::ProcessContextReplacing<float>(block);
@@ -213,9 +213,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout CSC475pitch_effectanalyzerAu
     using namespace juce;
 
     // add parameters
-    param_layout.add(std::make_unique<AudioParameterFloat>("rate", "Rate", NormalisableRange<float>(1.0f, 15.0f, 0.01f, 1.0f), 1));
+    param_layout.add(std::make_unique<AudioParameterFloat>("rate", "Rate", NormalisableRange<float>(0.1f, 2.0f, 0.001f, 1.0f), 0.1));
     param_layout.add(std::make_unique<AudioParameterFloat>("depth", "Depth", NormalisableRange<float>(0.0f, 1.0f, 0.001f, 1.0f), 0.25));
-    param_layout.add(std::make_unique<AudioParameterFloat>("feedback", "Feedback", NormalisableRange<float>(-1.0f, 1.0f, 0.001f, 1.0f), 0));
+    param_layout.add(std::make_unique<AudioParameterFloat>("feedback", "Feedback", NormalisableRange<float>(-0.25f, 0.25f, 0.001f, 1.0f), 0));
 
     // return layout
     return param_layout;

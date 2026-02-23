@@ -16,7 +16,7 @@ CSC475pitch_effectanalyzerAudioProcessorEditor::CSC475pitch_effectanalyzerAudioP
     // configure knobs
     //rate_knob.setLookAndFeel(&m_3dKnobLook);
     rate_knob.setTextValueSuffix("Hz");
-    rate_knob.setRange(1, 15.0, 0.01);
+    rate_knob.setRange(0.1, 2.0, 0.001);
     addAndMakeVisible(rate_knob);
 
     r_label.setText("Rate", juce::dontSendNotification);
@@ -50,7 +50,7 @@ CSC475pitch_effectanalyzerAudioProcessorEditor::CSC475pitch_effectanalyzerAudioP
 
     //feedback_knob.setLookAndFeel(&m_3dKnobLook);
     feedback_knob.setTextValueSuffix("Hz");
-    feedback_knob.setRange(-1, 1, 0.001);
+    feedback_knob.setRange(-0.25, 0.25, 0.001);
     addAndMakeVisible(feedback_knob);
 
     f_label.setText("Feedback", juce::dontSendNotification);
