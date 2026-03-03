@@ -150,12 +150,42 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
         auto n = buffer.getNumSamples();
 
         double sumSquares = 0.0;
+        float peak = 0.0f;
         for (int i = 0; i < n; ++i){
-            sumSquares += x[i] * x[i];
+            const float s = x[i];
+            sumSquares += (double) s * (double) s;
+            peak = juce::jmax(peak, std::abs(x[i]));
+
+            fifo[(size_t) fifoIndex++] = s;
+
+            if (fifoIndex == fftSize){
+                DBG(">>> FFT FRAME READ <<<");
+                fifoIndex = 0;
+                std::fill(fftData.begin(), fftData.end(), 0.0f);
+                for (int j=0; j < fftSize; ++j){
+                    fftData[(size_t) j] = fifo[(size_t) j];
+                }
+
+                window.multiplyWithWindowingTable(fftData.data(), fftSize);
+
+                fft.performFrequencyOnlyForwardTransform(fftData.data());
+                DBG("fftData[10]=" + juce::String(fftData[10], 8) +
+    " fftData[100]=" + juce::String(fftData[100], 8));
+
+                magsVersion.fetch_add(1, std::memory_order_acq_rel);
+
+                for (int k = 0; k < fftSize / 2; ++k){
+                    magnitudes[(size_t) k] = fftData[(size_t) k];
+                }
+
+                magsVersion.fetch_add(1, std::memory_order_acq_rel);
+            }
         }
 
         auto rms = std::sqrt(sumSquares / (double) n);
         inputRms.store((float) rms, std::memory_order_relaxed);
+        DBG("mag[10]=" << magnitudes[10] << " mag[100]=" << magnitudes[100]);
+        DBG("peak=" << peak);
     }
     else 
     {
@@ -209,4 +239,22 @@ void CSC475pitch_effectanalyzerAudioProcessor::setStateInformation (const void* 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new CSC475pitch_effectanalyzerAudioProcessor();
+}
+
+bool CSC475pitch_effectanalyzerAudioProcessor::getLatestMagnitudes(std::array<float, fftSize/2> & dest) const
+{
+    for (int tries = 0; tries <3; ++tries){
+        auto v1 = magsVersion.load(std::memory_order_acquire);
+        if (v1 & 1u){
+            continue;
+        }
+
+        dest = magnitudes;
+
+        auto v2 = magsVersion.load(std::memory_order_acquire);
+        if (v1 == v2 && !(v2 & 1u)){
+            return true;
+        }
+    }
+    return false;
 }

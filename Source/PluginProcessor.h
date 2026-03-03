@@ -53,8 +53,25 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    
+    static constexpr int fftOrder = 10; // 2^10 = 1024 point FFT
+    static constexpr int fftSize = 1 << fftOrder;
+    bool getLatestMagnitudes (std::array<float, fftSize / 2>& dest) const;
 
 private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CSC475pitch_effectanalyzerAudioProcessor)
+
+    juce::dsp::FFT fft { fftOrder };
+    juce::dsp::WindowingFunction<float> window { (size_t) fftSize, juce::dsp::WindowingFunction<float>::hann, false};
+
+    std::array<float, fftSize> fifo {};
+    int fifoIndex = 0;
+
+    std::array<float, fftSize * 2> fftData {};
+
+    std::array<float, fftSize / 2> magnitudes {};
+
+    std::atomic<uint32_t> magsVersion {0};
+
 };

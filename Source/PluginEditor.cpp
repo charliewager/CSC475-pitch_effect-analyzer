@@ -46,7 +46,11 @@ void CSC475pitch_effectanalyzerAudioProcessorEditor::resized()
 
 void CSC475pitch_effectanalyzerAudioProcessorEditor::timerCallback()
 {
-  auto lv = audioProcessor.inputRms.load(std::memory_order_relaxed);
-  DBG("RMS: " << lv);
-  inputSpectrum.setLevel(lv);
+  std::array<float, CSC475pitch_effectanalyzerAudioProcessor::fftSize / 2> mags;
+  if (audioProcessor.getLatestMagnitudes(mags)){
+    inputSpectrum.setMagnitudes(mags);
+  }
+  // auto lv = audioProcessor.inputRms.load(std::memory_order_relaxed);
+  // DBG("RMS: " << lv);
+  // inputSpectrum.setLevel(lv);
 }
