@@ -159,7 +159,6 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
             fifo[(size_t) fifoIndex++] = s;
 
             if (fifoIndex == fftSize){
-                DBG(">>> FFT FRAME READ <<<");
                 fifoIndex = 0;
                 std::fill(fftData.begin(), fftData.end(), 0.0f);
                 for (int j=0; j < fftSize; ++j){
@@ -169,8 +168,6 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
                 window.multiplyWithWindowingTable(fftData.data(), fftSize);
 
                 fft.performFrequencyOnlyForwardTransform(fftData.data());
-                DBG("fftData[10]=" + juce::String(fftData[10], 8) +
-    " fftData[100]=" + juce::String(fftData[100], 8));
 
                 magsVersion.fetch_add(1, std::memory_order_acq_rel);
 
@@ -184,8 +181,6 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
 
         auto rms = std::sqrt(sumSquares / (double) n);
         inputRms.store((float) rms, std::memory_order_relaxed);
-        DBG("mag[10]=" << magnitudes[10] << " mag[100]=" << magnitudes[100]);
-        DBG("peak=" << peak);
     }
     else 
     {
@@ -203,9 +198,6 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
 
         // ..do something to the data...
     }
-    DBG("inCh=" << getTotalNumInputChannels()
-    << " outCh=" << getTotalNumOutputChannels()
-    << " n=" << buffer.getNumSamples());
 
 }
 
