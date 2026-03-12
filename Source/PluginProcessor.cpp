@@ -34,6 +34,10 @@ CSC475pitch_effectanalyzerAudioProcessor::CSC475pitch_effectanalyzerAudioProcess
     feedback = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("feedback"));
     // assert param is not null
     jassert(feedback != nullptr);
+
+    effect = dynamic_cast<juce::AudioParameterChoice*>(apvts.getParameter("effect"));
+    // assert param is not null
+    jassert(effect != nullptr);
 }
 
 CSC475pitch_effectanalyzerAudioProcessor::~CSC475pitch_effectanalyzerAudioProcessor()
@@ -216,6 +220,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CSC475pitch_effectanalyzerAu
     param_layout.add(std::make_unique<AudioParameterFloat>("rate", "Rate", NormalisableRange<float>(0.1f, 2.0f, 0.001f, 1.0f), 0.1));
     param_layout.add(std::make_unique<AudioParameterFloat>("depth", "Depth", NormalisableRange<float>(0.0f, 1.0f, 0.001f, 1.0f), 0.25));
     param_layout.add(std::make_unique<AudioParameterFloat>("feedback", "Feedback", NormalisableRange<float>(-0.25f, 0.25f, 0.001f, 1.0f), 0));
+    param_layout.add(std::make_unique<AudioParameterChoice>("effect", "Effect Type Choice", StringArray("Chorus", "Multi-Voice Chorus"), 0));
 
     // return layout
     return param_layout;

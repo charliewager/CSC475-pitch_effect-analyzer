@@ -42,6 +42,9 @@ private:
     juce::Label f_label;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> feedbackAttachment;
 
+    juce::ComboBox effect;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> effectAttachment;
+
     juce::Label input_lable;
     juce::Label output_lable;
 

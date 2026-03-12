@@ -65,6 +65,7 @@ private:
     juce::AudioParameterFloat* rate{ nullptr };
     juce::AudioParameterFloat* depth{ nullptr };
     juce::AudioParameterFloat* feedback{ nullptr };
+    juce::AudioParameterChoice* effect{ nullptr };
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CSC475pitch_effectanalyzerAudioProcessor)

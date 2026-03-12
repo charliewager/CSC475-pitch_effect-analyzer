@@ -65,6 +65,18 @@ CSC475pitch_effectanalyzerAudioProcessorEditor::CSC475pitch_effectanalyzerAudioP
         feedback_knob
     );
 
+    effect.addItem("Chorus", 1);
+    effect.addItem("Multi-Voice Chorus", 2);
+    effect.setJustificationType(juce::Justification::centred);
+    addAndMakeVisible(effect);
+
+    // add attachment
+    effectAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
+        audioProcessor.apvts,
+        "effect",
+        effect
+    );
+
     input_lable.setText("Input Spectrum and chord", juce::dontSendNotification);
     input_lable.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(input_lable);
@@ -120,8 +132,9 @@ void CSC475pitch_effectanalyzerAudioProcessorEditor::resized()
     float grid_item_w = (bound.getWidth() * 0.6) / 3.75;
 
     knob_grid.items = { fi::FlexItem(rate_knob).withWidth(grid_item_w).withHeight(grid_item_h).withMargin(juce::FlexItem::Margin(0.0, 20.0, 0.0, 20.0)),
-                             fi::FlexItem(depth_knob).withWidth(grid_item_w).withHeight(grid_item_h).withMargin(juce::FlexItem::Margin(0.0, 20.0, 0.0, 20.0)),
-                             fi::FlexItem(feedback_knob).withWidth(grid_item_w).withHeight(grid_item_h).withMargin(juce::FlexItem::Margin(0.0, 20.0, 0.0, 20.0))
+                        fi::FlexItem(depth_knob).withWidth(grid_item_w).withHeight(grid_item_h).withMargin(juce::FlexItem::Margin(0.0, 20.0, 0.0, 20.0)),
+                        fi::FlexItem(feedback_knob).withWidth(grid_item_w).withHeight(grid_item_h).withMargin(juce::FlexItem::Margin(0.0, 20.0, 0.0, 20.0)),
+                        fi::FlexItem(effect).withWidth(grid_item_w).withHeight(grid_item_h).withMargin(juce::FlexItem::Margin(0.0, 20.0, 0.0, 20.0))
     };
 
     //input spectrum strip layout
