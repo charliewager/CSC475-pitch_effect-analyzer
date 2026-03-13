@@ -118,17 +118,43 @@ void CSC475pitch_effectanalyzerAudioProcessor::prepareToPlay (double sampleRate,
     spec.sampleRate = sampleRate;
     for (auto& c : chorusVoices)
         c.prepare(spec);
-    
-    // Initial global settings (centre delay & mix defaults)
-    for (auto& c : chorusVoices)
-    {
-        c.setCentreDelay(7.5f);      // ms, classic chorus region[web:7]
-        c.setMix(0.5f);         // 0–1
-    }
 
     int numChannels = getTotalNumOutputChannels();
     dryBuffer.setSize(numChannels, samplesPerBlock);
     voiceBuffer.setSize(numChannels, samplesPerBlock);
+
+    // Prewarm each voice with silence to stagger LFO phases evenly across one cycle.
+    // Voice v is advanced by v/numVoices of a full cycle so voices are always
+    // at independent points in their modulation cycle from the first sample.
+    const float prewarmRate = 0.5f; // Hz — arbitrary, only determines prewarm chunk count
+    for (int v = 0; v < numVoices; ++v)
+    {
+        chorusVoices[v].setRate(prewarmRate);
+        chorusVoices[v].setDepth(0.5f);
+        chorusVoices[v].setCentreDelay(7.5f);
+        chorusVoices[v].setMix(1.0f);
+
+        int samplesToProcess = static_cast<int>(
+            static_cast<double>(v) * sampleRate / (prewarmRate * numVoices));
+
+        voiceBuffer.clear();
+        while (samplesToProcess > 0)
+        {
+            int chunkSize = std::min(samplesToProcess, samplesPerBlock);
+            auto block   = juce::dsp::AudioBlock<float>(voiceBuffer.getArrayOfWritePointers(),
+                                                        (size_t)numChannels, (size_t)chunkSize);
+            auto context = juce::dsp::ProcessContextReplacing<float>(block);
+            chorusVoices[v].process(context);
+            samplesToProcess -= chunkSize;
+        }
+    }
+
+    // Restore defaults (processBlock overrides params every block anyway)
+    for (auto& c : chorusVoices)
+    {
+        c.setCentreDelay(7.5f);
+        c.setMix(0.5f);
+    }
 }
 
 void CSC475pitch_effectanalyzerAudioProcessor::releaseResources()
@@ -217,6 +243,10 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
         // Use buffer as accumulator — clear it first
         buffer.clear();
 
+        // Accumulate the sum of per-channel pan gains to use as the normalisation divisor.
+        // Left and right sums are equal by symmetry of the -1..+1 spread, so one value suffices.
+        float panGainSum = 0.0f;
+
         for (int v = 0; v < numVoices; ++v)
         {
             const float t = (numVoices > 1) ? (static_cast<float>(v) / (numVoices - 1)) : 0.0f;
@@ -245,9 +275,16 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
             // Equal-power stereo pan: voice 0 -> hard left, centre voice -> centre, last -> hard right
             if (numChannels >= 2)
             {
-                const float angle = (u + 1.0f) * (juce::MathConstants<float>::pi * 0.25f);
-                voiceBuffer.applyGain(0, 0, numSamples, std::cos(angle)); // left
-                voiceBuffer.applyGain(1, 0, numSamples, std::sin(angle)); // right
+                const float angle     = (u + 1.0f) * (juce::MathConstants<float>::pi * 0.25f);
+                const float leftGain  = std::cos(angle);
+                const float rightGain = std::sin(angle);
+                panGainSum += leftGain; // left and right sums are equal by symmetry
+                voiceBuffer.applyGain(0, 0, numSamples, leftGain);
+                voiceBuffer.applyGain(1, 0, numSamples, rightGain);
+            }
+            else
+            {
+                panGainSum += 1.0f; // no panning in mono — each voice contributes equally
             }
 
             // Accumulate panned voice into buffer
@@ -255,11 +292,12 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
                 buffer.addFrom(ch, 0, voiceBuffer, ch, 0, numSamples);
         }
 
-        // Normalize wet sum, then blend 50/50 with dry
-        buffer.applyGain(1.0f / static_cast<float>(numVoices));
+        // Normalise by the actual pan gain sum so wet output level is independent of
+        // voice count and pan spread, then blend 65% wet / 35% dry.
+        const float wetLevel = 0.65f;
+        buffer.applyGain(wetLevel / panGainSum);
         for (int ch = 0; ch < numChannels; ++ch)
-            buffer.addFrom(ch, 0, dryBuffer, ch, 0, numSamples);
-        buffer.applyGain(0.5f);
+            buffer.addFrom(ch, 0, dryBuffer, ch, 0, numSamples, 1.0f - wetLevel);
     }
 }
 

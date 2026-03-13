@@ -60,7 +60,7 @@ public:
 
 private:
     
-    static constexpr int numVoices = 3;
+    static constexpr int numVoices = 6;
     juce::dsp::Chorus<float> chorusVoices[numVoices];
 
     juce::AudioBuffer<float> dryBuffer;
