@@ -125,6 +125,10 @@ void CSC475pitch_effectanalyzerAudioProcessor::prepareToPlay (double sampleRate,
         c.setCentreDelay(7.5f);      // ms, classic chorus region[web:7]
         c.setMix(0.5f);         // 0–1
     }
+
+    int numChannels = getTotalNumOutputChannels();
+    dryBuffer.setSize(numChannels, samplesPerBlock);
+    voiceBuffer.setSize(numChannels, samplesPerBlock);
 }
 
 void CSC475pitch_effectanalyzerAudioProcessor::releaseResources()
@@ -179,9 +183,10 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
     float r = rate->get();
     float d = depth->get();
     float f = feedback->get();
-    auto type = effect->getCurrentChoiceName();
+    int effectIndex = effect->getIndex();
 
-    if (type == "Chorus") {
+    if (effectIndex == 0) // Chorus
+    {
         chorusVoices[0].setRate(r);
         chorusVoices[0].setDepth(d);
         chorusVoices[0].setFeedback(f);
@@ -192,75 +197,67 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
         auto context = juce::dsp::ProcessContextReplacing<float>(block);
         chorusVoices[0].process(context);
     }
-    else if (type == "Multi-Voice Chorus") {
-        const float baseRate = r;
-        const float baseDepth = d;
-        const float baseFeedback = f;
-        const float baseDelayMs = 7.5f; // or another param / constant
+    else if (effectIndex == 1) // Multi-Voice Chorus
+    {
+        const float baseDelayMs    = 7.5f;
+        const float minDelayMs     = 1.0f;
+        const float maxDelayMs     = 20.0f;
+        const float delaySpreadMs  = 2.0f;
+        const float depthSpread    = 0.15f;
+        const float rateSpreadHz   = 0.1f;
+        const float feedbackSpread = 0.1f;
 
-        // Safety / ranges for Chorus[web:7]
-        const float minDelayMs = 1.0f;
-        const float maxDelayMs = 20.0f; // keep in chorus-ish range
-
-        // Example spreads
-        const float delaySpreadMs = 2.0f;   // +/- per voice
-        const float depthSpread = 0.15f;  // +/- relative depth
-        const float rateSpreadHz = 0.1f;   // small rate offsets
-        const float feedbackSpread = 0.1f;   // small feedback variation
-        // Update global settings on each voice
         for (int i = 0; i < numVoices; ++i)
         {
-            //chorusVoices[i].setRate(r);
-            //chorusVoices[i].setDepth(d);
-            //chorusVoices[i].setFeedback(f);
+            const float t = (numVoices > 1) ? (static_cast<float>(i) / (numVoices - 1)) : 0.0f;
+            const float u = 2.0f * t - 1.0f; // map 0..1 -> -1..1
 
-            const float t = (numVoices > 1)
-                ? (static_cast<float>(i) / (numVoices - 1))
-                : 0.0f;
-
-            // Map t from 0..1 to -1..1
-            const float u = 2.0f * t - 1.0f;
-
-            // Per‑voice centre delay
-            float voiceDelay = baseDelayMs + u * delaySpreadMs;
-            voiceDelay = juce::jlimit(minDelayMs, maxDelayMs, voiceDelay);
-
-            // Per‑voice depth (clamped 0..1)
-            float voiceDepth = baseDepth * (1.0f + u * depthSpread);
-            voiceDepth = juce::jlimit(0.0f, 1.0f, voiceDepth);
-
-            // Per‑voice rate (slight detune)
-            float voiceRate = baseRate + u * rateSpreadHz;
-            voiceRate = std::max(0.01f, voiceRate); // avoid 0 Hz
-
-            // Per‑voice feedback (clamped -1..1)
-            float voiceFeedback = baseFeedback + u * feedbackSpread;
-            voiceFeedback = juce::jlimit(-1.0f, 1.0f, voiceFeedback);
+            float voiceDelay    = juce::jlimit(minDelayMs, maxDelayMs, baseDelayMs + u * delaySpreadMs);
+            float voiceDepth    = juce::jlimit(0.0f, 1.0f, d * (1.0f + u * depthSpread));
+            float voiceRate     = std::max(0.01f, r + u * rateSpreadHz);
+            float voiceFeedback = juce::jlimit(-1.0f, 1.0f, f + u * feedbackSpread);
 
             chorusVoices[i].setRate(voiceRate);
             chorusVoices[i].setDepth(voiceDepth);
             chorusVoices[i].setFeedback(voiceFeedback);
             chorusVoices[i].setCentreDelay(voiceDelay);
+            chorusVoices[i].setMix(1.0f); // fully wet — dry/wet blend handled manually below
         }
 
-        // Make a copy of the input to accumulate voices into
-        juce::AudioBuffer<float> chorusAccum;
-        chorusAccum.makeCopyOf(buffer);            // start with dry
-        juce::dsp::AudioBlock<float> chorusBlock(chorusAccum);
-        juce::dsp::ProcessContextReplacing<float> chorusContext(chorusBlock);
+        const int numSamples  = buffer.getNumSamples();
+        const int numChannels = buffer.getNumChannels();
 
-        // Apply each chorus voice, summing into chorusAccum
-        for (int v = 0; v < numVoices; ++v)
+        // Save dry input
+        for (int ch = 0; ch < numChannels; ++ch)
+            dryBuffer.copyFrom(ch, 0, buffer, ch, 0, numSamples);
+
+        // Process voice 0 in-place on buffer (becomes first voice's output)
         {
-            // process in-place on chorusAccum (we'll normalize after)
-            chorusVoices[v].process(chorusContext);
+            auto block   = juce::dsp::AudioBlock<float>(buffer);
+            auto context = juce::dsp::ProcessContextReplacing<float>(block);
+            chorusVoices[0].process(context);
         }
 
-        // Normalize by number of voices to avoid excessive gain
-        //chorusAccum.applyGain(0.8f);
+        // Process each remaining voice from the dry input, then add to buffer
+        for (int v = 1; v < numVoices; ++v)
+        {
+            for (int ch = 0; ch < numChannels; ++ch)
+                voiceBuffer.copyFrom(ch, 0, dryBuffer, ch, 0, numSamples);
 
-        // Replace buffer with the chorus result
-        buffer.makeCopyOf(chorusAccum);
+            auto block   = juce::dsp::AudioBlock<float>(voiceBuffer.getArrayOfWritePointers(),
+                                                        (size_t)numChannels, (size_t)numSamples);
+            auto context = juce::dsp::ProcessContextReplacing<float>(block);
+            chorusVoices[v].process(context);
+
+            for (int ch = 0; ch < numChannels; ++ch)
+                buffer.addFrom(ch, 0, voiceBuffer, ch, 0, numSamples);
+        }
+
+        // Normalize the summed wet voices, then blend 50/50 with dry
+        buffer.applyGain(1.0f / static_cast<float>(numVoices));
+        for (int ch = 0; ch < numChannels; ++ch)
+            buffer.addFrom(ch, 0, dryBuffer, ch, 0, numSamples);
+        buffer.applyGain(0.5f);
     }
 }
 

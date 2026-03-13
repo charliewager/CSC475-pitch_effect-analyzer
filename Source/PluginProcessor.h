@@ -63,6 +63,9 @@ private:
     static constexpr int numVoices = 3;
     juce::dsp::Chorus<float> chorusVoices[numVoices];
 
+    juce::AudioBuffer<float> dryBuffer;
+    juce::AudioBuffer<float> voiceBuffer;
+
     juce::AudioParameterFloat* rate{ nullptr };
     juce::AudioParameterFloat* depth{ nullptr };
     juce::AudioParameterFloat* feedback{ nullptr };
