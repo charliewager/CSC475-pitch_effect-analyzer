@@ -197,8 +197,6 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
         auto* channelData = buffer.getWritePointer (channel);
 
         // ..do something to the data...
-        for (int i = 0; i < buffer.getNumSamples(); ++i)
-            channelData[i] *= 3.0f;
         
     }
 
