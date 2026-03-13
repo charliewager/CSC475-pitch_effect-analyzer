@@ -31,6 +31,7 @@ private:
     // access the processor object that created it.
     CSC475pitch_effectanalyzerAudioProcessor& audioProcessor;
     SpectrumComponent inputSpectrum;
+    SpectrumComponent outputSpectrum;
     void timerCallback() override;
 
 

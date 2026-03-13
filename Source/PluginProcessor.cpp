@@ -199,6 +199,32 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
         // ..do something to the data...
     }
 
+    if (totalNumOutputChannels > 0){
+        const float* y = buffer.getReadPointer(0);
+        const int n = buffer.getNumSamples();
+
+        for (int i = 0; i < n; ++i){
+            outputFifo[(size_t) outputFifoIndex++] = y[i];
+
+            if (outputFifoIndex == fftSize){
+                outputFifoIndex = 0;
+                std::fill(outputFftData.begin() , outputFftData.end(), 0.0f);
+
+                for (int j = 0; j<fftSize; ++j){
+                    outputFftData[(size_t) j] = outputFifo[(size_t) j];
+                }
+                window.multiplyWithWindowingTable(outputFftData.data(), fftSize);
+                fft.performFrequencyOnlyForwardTransform(outputFftData.data());
+                outputMagsVersion.fetch_add(1, std::memory_order_acq_rel);
+
+                for (int k = 0; k<fftSize/2; ++k){
+                    outputMagnitudes[(size_t) k] = outputFftData[(size_t) k];
+                }
+                outputMagsVersion.fetch_add(1, std::memory_order_acq_rel);
+            }
+        }
+    }
+
 }
 
 //==============================================================================
@@ -244,6 +270,24 @@ bool CSC475pitch_effectanalyzerAudioProcessor::getLatestMagnitudes(std::array<fl
         dest = magnitudes;
 
         auto v2 = magsVersion.load(std::memory_order_acquire);
+        if (v1 == v2 && !(v2 & 1u)){
+            return true;
+        }
+    }
+    return false;
+}
+
+bool CSC475pitch_effectanalyzerAudioProcessor::getLatestOutputMagnitudes(std::array<float, fftSize/2> & dest) const
+{
+    for (int tries = 0; tries <3; ++tries){
+        auto v1 = outputMagsVersion.load(std::memory_order_acquire);
+        if (v1 & 1u){
+            continue;
+        }
+
+        dest = outputMagnitudes;
+
+        auto v2 = outputMagsVersion.load(std::memory_order_acquire);
         if (v1 == v2 && !(v2 & 1u)){
             return true;
         }

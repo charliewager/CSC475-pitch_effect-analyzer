@@ -57,6 +57,7 @@ public:
     static constexpr int fftOrder = 10; // 2^10 = 1024 point FFT
     static constexpr int fftSize = 1 << fftOrder;
     bool getLatestMagnitudes (std::array<float, fftSize / 2>& dest) const;
+    bool getLatestOutputMagnitudes (std::array<float, fftSize / 2>& dest) const;
 
 private:
     //==============================================================================
@@ -73,5 +74,13 @@ private:
     std::array<float, fftSize / 2> magnitudes {};
 
     std::atomic<uint32_t> magsVersion {0};
+
+    std::array<float, fftSize> outputFifo {};
+    int outputFifoIndex = 0;
+
+    std::array<float, fftSize*2> outputFftData {};
+    std::array<float, fftSize/2> outputMagnitudes {};
+
+    std::atomic<uint32_t> outputMagsVersion {0};
 
 };
