@@ -1,4 +1,4 @@
-/*
+﻿/*
   ==============================================================================
 
     This file contains the basic framework code for a JUCE plugin processor.
@@ -116,7 +116,15 @@ void CSC475pitch_effectanalyzerAudioProcessor::prepareToPlay (double sampleRate,
     spec.maximumBlockSize = samplesPerBlock;
     spec.numChannels = getTotalNumOutputChannels();
     spec.sampleRate = sampleRate;
-    chorus.prepare(spec);
+    for (auto& c : chorusVoices)
+        c.prepare(spec);
+    
+    // Initial global settings (centre delay & mix defaults)
+    for (auto& c : chorusVoices)
+    {
+        c.setCentreDelay(7.5f);      // ms, classic chorus region[web:7]
+        c.setMix(0.5f);         // 0–1
+    }
 }
 
 void CSC475pitch_effectanalyzerAudioProcessor::releaseResources()
@@ -168,15 +176,92 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
-    chorus.setRate(rate->get());
-    chorus.setDepth(depth->get());
-    chorus.setFeedback(feedback->get());
-    chorus.setMix(0.5f);
-    chorus.setCentreDelay(7.5f);
+    float r = rate->get();
+    float d = depth->get();
+    float f = feedback->get();
+    auto type = effect->getCurrentChoiceName();
 
-    auto block = juce::dsp::AudioBlock<float>(buffer);
-    auto context = juce::dsp::ProcessContextReplacing<float>(block);
-    chorus.process(context);
+    if (type == "Chorus") {
+        chorusVoices[0].setRate(r);
+        chorusVoices[0].setDepth(d);
+        chorusVoices[0].setFeedback(f);
+        chorusVoices[0].setMix(0.5f);
+        chorusVoices[0].setCentreDelay(7.5f);
+
+        auto block = juce::dsp::AudioBlock<float>(buffer);
+        auto context = juce::dsp::ProcessContextReplacing<float>(block);
+        chorusVoices[0].process(context);
+    }
+    else if (type == "Multi-Voice Chorus") {
+        const float baseRate = r;
+        const float baseDepth = d;
+        const float baseFeedback = f;
+        const float baseDelayMs = 7.5f; // or another param / constant
+
+        // Safety / ranges for Chorus[web:7]
+        const float minDelayMs = 1.0f;
+        const float maxDelayMs = 20.0f; // keep in chorus-ish range
+
+        // Example spreads
+        const float delaySpreadMs = 2.0f;   // +/- per voice
+        const float depthSpread = 0.15f;  // +/- relative depth
+        const float rateSpreadHz = 0.1f;   // small rate offsets
+        const float feedbackSpread = 0.1f;   // small feedback variation
+        // Update global settings on each voice
+        for (int i = 0; i < numVoices; ++i)
+        {
+            //chorusVoices[i].setRate(r);
+            //chorusVoices[i].setDepth(d);
+            //chorusVoices[i].setFeedback(f);
+
+            const float t = (numVoices > 1)
+                ? (static_cast<float>(i) / (numVoices - 1))
+                : 0.0f;
+
+            // Map t from 0..1 to -1..1
+            const float u = 2.0f * t - 1.0f;
+
+            // Per‑voice centre delay
+            float voiceDelay = baseDelayMs + u * delaySpreadMs;
+            voiceDelay = juce::jlimit(minDelayMs, maxDelayMs, voiceDelay);
+
+            // Per‑voice depth (clamped 0..1)
+            float voiceDepth = baseDepth * (1.0f + u * depthSpread);
+            voiceDepth = juce::jlimit(0.0f, 1.0f, voiceDepth);
+
+            // Per‑voice rate (slight detune)
+            float voiceRate = baseRate + u * rateSpreadHz;
+            voiceRate = std::max(0.01f, voiceRate); // avoid 0 Hz
+
+            // Per‑voice feedback (clamped -1..1)
+            float voiceFeedback = baseFeedback + u * feedbackSpread;
+            voiceFeedback = juce::jlimit(-1.0f, 1.0f, voiceFeedback);
+
+            chorusVoices[i].setRate(voiceRate);
+            chorusVoices[i].setDepth(voiceDepth);
+            chorusVoices[i].setFeedback(voiceFeedback);
+            chorusVoices[i].setCentreDelay(voiceDelay);
+        }
+
+        // Make a copy of the input to accumulate voices into
+        juce::AudioBuffer<float> chorusAccum;
+        chorusAccum.makeCopyOf(buffer);            // start with dry
+        juce::dsp::AudioBlock<float> chorusBlock(chorusAccum);
+        juce::dsp::ProcessContextReplacing<float> chorusContext(chorusBlock);
+
+        // Apply each chorus voice, summing into chorusAccum
+        for (int v = 0; v < numVoices; ++v)
+        {
+            // process in-place on chorusAccum (we'll normalize after)
+            chorusVoices[v].process(chorusContext);
+        }
+
+        // Normalize by number of voices to avoid excessive gain
+        //chorusAccum.applyGain(0.8f);
+
+        // Replace buffer with the chorus result
+        buffer.makeCopyOf(chorusAccum);
+    }
 }
 
 //==============================================================================
