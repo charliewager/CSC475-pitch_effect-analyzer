@@ -202,45 +202,38 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
         const float baseDelayMs    = 7.5f;
         const float minDelayMs     = 1.0f;
         const float maxDelayMs     = 20.0f;
-        const float delaySpreadMs  = 2.0f;
-        const float depthSpread    = 0.15f;
-        const float rateSpreadHz   = 0.1f;
+        const float delaySpreadMs  = 6.0f;  // wider spread across voices
+        const float depthSpread    = 0.3f;  // wider spread across voices
+        const float rateSpreadHz   = 0.4f;  // LFOs run at clearly different speeds
         const float feedbackSpread = 0.1f;
 
-        for (int i = 0; i < numVoices; ++i)
+        const int numSamples  = buffer.getNumSamples();
+        const int numChannels = buffer.getNumChannels();
+
+        // Save dry input before any processing
+        for (int ch = 0; ch < numChannels; ++ch)
+            dryBuffer.copyFrom(ch, 0, buffer, ch, 0, numSamples);
+
+        // Use buffer as accumulator — clear it first
+        buffer.clear();
+
+        for (int v = 0; v < numVoices; ++v)
         {
-            const float t = (numVoices > 1) ? (static_cast<float>(i) / (numVoices - 1)) : 0.0f;
-            const float u = 2.0f * t - 1.0f; // map 0..1 -> -1..1
+            const float t = (numVoices > 1) ? (static_cast<float>(v) / (numVoices - 1)) : 0.0f;
+            const float u = 2.0f * t - 1.0f; // -1..+1 across voices
 
             float voiceDelay    = juce::jlimit(minDelayMs, maxDelayMs, baseDelayMs + u * delaySpreadMs);
             float voiceDepth    = juce::jlimit(0.0f, 1.0f, d * (1.0f + u * depthSpread));
             float voiceRate     = std::max(0.01f, r + u * rateSpreadHz);
             float voiceFeedback = juce::jlimit(-1.0f, 1.0f, f + u * feedbackSpread);
 
-            chorusVoices[i].setRate(voiceRate);
-            chorusVoices[i].setDepth(voiceDepth);
-            chorusVoices[i].setFeedback(voiceFeedback);
-            chorusVoices[i].setCentreDelay(voiceDelay);
-            chorusVoices[i].setMix(1.0f); // fully wet — dry/wet blend handled manually below
-        }
+            chorusVoices[v].setRate(voiceRate);
+            chorusVoices[v].setDepth(voiceDepth);
+            chorusVoices[v].setFeedback(voiceFeedback);
+            chorusVoices[v].setCentreDelay(voiceDelay);
+            chorusVoices[v].setMix(1.0f); // fully wet — dry/wet blended manually below
 
-        const int numSamples  = buffer.getNumSamples();
-        const int numChannels = buffer.getNumChannels();
-
-        // Save dry input
-        for (int ch = 0; ch < numChannels; ++ch)
-            dryBuffer.copyFrom(ch, 0, buffer, ch, 0, numSamples);
-
-        // Process voice 0 in-place on buffer (becomes first voice's output)
-        {
-            auto block   = juce::dsp::AudioBlock<float>(buffer);
-            auto context = juce::dsp::ProcessContextReplacing<float>(block);
-            chorusVoices[0].process(context);
-        }
-
-        // Process each remaining voice from the dry input, then add to buffer
-        for (int v = 1; v < numVoices; ++v)
-        {
+            // Process this voice from the dry input
             for (int ch = 0; ch < numChannels; ++ch)
                 voiceBuffer.copyFrom(ch, 0, dryBuffer, ch, 0, numSamples);
 
@@ -249,11 +242,20 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
             auto context = juce::dsp::ProcessContextReplacing<float>(block);
             chorusVoices[v].process(context);
 
+            // Equal-power stereo pan: voice 0 -> hard left, centre voice -> centre, last -> hard right
+            if (numChannels >= 2)
+            {
+                const float angle = (u + 1.0f) * (juce::MathConstants<float>::pi * 0.25f);
+                voiceBuffer.applyGain(0, 0, numSamples, std::cos(angle)); // left
+                voiceBuffer.applyGain(1, 0, numSamples, std::sin(angle)); // right
+            }
+
+            // Accumulate panned voice into buffer
             for (int ch = 0; ch < numChannels; ++ch)
                 buffer.addFrom(ch, 0, voiceBuffer, ch, 0, numSamples);
         }
 
-        // Normalize the summed wet voices, then blend 50/50 with dry
+        // Normalize wet sum, then blend 50/50 with dry
         buffer.applyGain(1.0f / static_cast<float>(numVoices));
         for (int ch = 0; ch < numChannels; ++ch)
             buffer.addFrom(ch, 0, dryBuffer, ch, 0, numSamples);
