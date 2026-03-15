@@ -1,14 +1,13 @@
 /*
   ==============================================================================
 
-    This file contains the basic framework code for a JUCE plugin editor.
+
 
   ==============================================================================
 */
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-
 //==============================================================================
 CSC475pitch_effectanalyzerAudioProcessorEditor::CSC475pitch_effectanalyzerAudioProcessorEditor (CSC475pitch_effectanalyzerAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
