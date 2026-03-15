@@ -74,20 +74,23 @@ ChromaVector ChordRecognizer::extractChroma(const std::vector<float>& fftMagnitu
         float freq = bin * (float)sampleRate / (float)fftSize;
         if (freq < 32.7f || freq > 7902.f) continue;
 
+        
         float midi     = 69.f + 12.f * std::log2(freq / 440.f);
-        int pitchClass = ((int)std::round(midi)) % 12;
+        
+        int midiRounded = (int)std::round(midi);
+        int pitchClass  = midiRounded % 12;
         if (pitchClass < 0) pitchClass += 12;
 
-        chroma[pitchClass] += fftMagnitudes[bin];
+        float mag = fftMagnitudes[bin];
+        chroma[pitchClass] += mag * mag;
     }
 
-    float sum = std::accumulate(chroma.begin(), chroma.end(), 0.f);
-    if (sum > 0.f)
-        for (auto& v : chroma) v /= sum;
+    float maxVal = *std::max_element(chroma.begin(), chroma.end());
+    if (maxVal > 0.f)
+        for (auto& v : chroma) v /= maxVal;
 
     return chroma;
 }
-
 float ChordRecognizer::cosineSimilarity(const ChromaVector& a, const ChromaVector& b)
 {
     float dot = 0.f, normA = 0.f, normB = 0.f;
