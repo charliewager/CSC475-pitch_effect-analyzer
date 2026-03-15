@@ -18,6 +18,15 @@ CSC475pitch_effectanalyzerAudioProcessorEditor::CSC475pitch_effectanalyzerAudioP
     addAndMakeVisible(outputSpectrum);
     setSize(600, 400);
     startTimerHz(30);
+    inputChordLabel.setText("Input: N/C", juce::dontSendNotification);
+    inputChordLabel.setColour(juce::Label::textColourId, juce::Colours::white);
+    inputChordLabel.setFont(juce::FontOptions(20.f, juce::Font::bold));
+    addAndMakeVisible(inputChordLabel);
+
+    outputChordLabel.setText("Output: N/C", juce::dontSendNotification);
+    outputChordLabel.setColour(juce::Label::textColourId, juce::Colours::yellow);
+    outputChordLabel.setFont(juce::FontOptions(20.f, juce::Font::bold));
+    addAndMakeVisible(outputChordLabel);
 
 }
 
@@ -53,6 +62,9 @@ void CSC475pitch_effectanalyzerAudioProcessorEditor::resized()
 
     inputSpectrum.setBounds(left);
     outputSpectrum.setBounds(right);
+    
+    inputChordLabel.setBounds(10, getHeight() - 60, 200, 30);
+    outputChordLabel.setBounds(10, getHeight() - 30, 200, 30);
 
 }
 
@@ -70,4 +82,13 @@ void CSC475pitch_effectanalyzerAudioProcessorEditor::timerCallback()
   // auto lv = audioProcessor.inputRms.load(std::memory_order_relaxed);
   // DBG("RMS: " << lv);
   // inputSpectrum.setLevel(lv);
+    ChordResult inputResult;
+    if (audioProcessor.inputChordRecognizer->popResult(inputResult))
+        inputChordLabel.setText("Input: " + inputResult.chordName,
+                                 juce::dontSendNotification);
+
+    ChordResult outputResult;
+    if (audioProcessor.outputChordRecognizer->popResult(outputResult))
+        outputChordLabel.setText("Output: " + outputResult.chordName,
+                                  juce::dontSendNotification);
 }

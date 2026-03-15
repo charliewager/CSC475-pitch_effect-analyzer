@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "SpectrumComponent.h"
+#include "ChordRecognizer.hpp"
 
 
 //==============================================================================
@@ -33,6 +34,9 @@ private:
     SpectrumComponent inputSpectrum;
     SpectrumComponent outputSpectrum;
     void timerCallback() override;
+    
+    juce::Label inputChordLabel;
+    juce::Label outputChordLabel;
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CSC475pitch_effectanalyzerAudioProcessorEditor)

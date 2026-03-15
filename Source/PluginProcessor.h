@@ -9,6 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "ChordRecognizer.hpp"
 
 //==============================================================================
 /**
@@ -58,6 +59,9 @@ public:
     static constexpr int fftSize = 1 << fftOrder;
     bool getLatestMagnitudes (std::array<float, fftSize / 2>& dest) const;
     bool getLatestOutputMagnitudes (std::array<float, fftSize / 2>& dest) const;
+    
+    std::unique_ptr<ChordRecognizer> inputChordRecognizer;
+    std::unique_ptr<ChordRecognizer> outputChordRecognizer;
 
 private:
     //==============================================================================
