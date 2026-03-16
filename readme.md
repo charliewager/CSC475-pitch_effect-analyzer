@@ -55,6 +55,14 @@ While each member has a primary focus, the project will be collaborative. Everyo
 As can be seen above, the JUCE plugin has been initialized and all group members have successfully run the plugin on their devices.
 In addition to this the chorus effect has been implemented and a multi-voiced mode has been added.
 
+Implementing the single voice chorus was simple enough but the multi-voiced mode posed a real challenge. The single voice chorus can be implemented using the built-in chorus porcessor in JUCE.
+It was assumed that the multi-voiced mode would be similarily easy and could be implemented by simply using multiple instances of this chorus processor to process the audio block.
+This approach did end up creating a sort of chorus effect, but this was not a ture multi-voiced chorus since it resulted in the chorus intances processing the audio block in series and not in parallel.
+To put it simply this approach ended up applying one chorus after another, essentially adding chorus to a singal that already had chorus - which was not the goal.
+This was fixed by creating a copy of the dry singal for each chorus instance, which resulted in a true multi-voiced chorus. After tweaking the spread and mix parameters, a lush mutli-voiced chorus mode was acheived.
+
+
+
 ## 3.2. Owen O'Keefe
 - Objective: Implement Chord Recognition model
   - ~~P1 (basic): evaluate tensorflow's feasibility for this project for chord recognition~~
