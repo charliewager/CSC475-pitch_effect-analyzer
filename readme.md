@@ -37,18 +37,23 @@ While each member has a primary focus, the project will be collaborative. Everyo
 ## 3.1. Charlie Wager
 
 - Objective: Create JUCE project, set up and test Plugin.
-  - P1 (basic): intitialize JUCE plugin.
-  - P2 (basic): ensure all group members can run the plugin.
+  - ~~P1 (basic): intitialize JUCE plugin.~~
+  - ~~P2 (basic): ensure all group members can run the plugin.~~
   - P3 (expected): test plugin in multiple DAWs.
   - P4 (advanced): create installation media for windows.
   - P5 (advanced): create installation media for Mac.
   
 - Objective: Design pitch-based audio effect(s).
-  - P1 (basic): implement a chorus effect.
-  - P2 (expected): add multiple voices to chorus effect.
+  - ~~P1 (basic): implement a chorus effect.~~
+  - ~~P2 (expected): add multiple voices to chorus effect.~~
   - P3 (expected): implement a second pitch-based effect.
   - P4 (advanced): add complexity to the second effect.
   - P5 (advanced): add a third pitch-based audio effect.
+ 
+### 3.1.2 Progress Report
+
+As can be seen above, the JUCE plugin has been initialized and all group members have successfully run the plugin on their devices.
+In addition to this the chorus effect has been implemented and a multi-voiced mode has been added.
 
 ## 3.2. Owen O'Keefe
 - Objective: Implement Chord Recognition model
