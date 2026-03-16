@@ -60,8 +60,25 @@ It was assumed that the multi-voiced mode would be similarily easy and could be 
 This approach did end up creating a sort of chorus effect, but this was not a ture multi-voiced chorus since it resulted in the chorus intances processing the audio block in series and not in parallel.
 To put it simply this approach ended up applying one chorus after another, essentially adding chorus to a singal that already had chorus - which was not the goal.
 This was fixed by creating a copy of the dry singal for each chorus instance, which resulted in a true multi-voiced chorus. After tweaking the spread and mix parameters, a lush mutli-voiced chorus mode was acheived.
+The implementation of both effects can be seen between lines 192 and 301 of the PluginPorcessor.cpp file.
 
+As for the timeline and goals for the final product, these remain unchanged from what is mentioned in section 3.1. The steps that will be taken to accomplish these are as follows:
 
+- Research will be conducted to select the second audio effect. The ideal effect will not be extremely complex to implement and will noticably alter the frequency spectrum. Ideally this effect would cause a drastic enough change so that the output chord would be changed from the input chord. The candidates for this effect include a flanger, a phaser, a ring modulator, and a pitch shifter.
+- The chosen effect will be implemented.
+- Some complexity/depth will be added to the second effect, such as more voices or shifts, or a more musically insteresting shift.\
+- All branches will be merged to main.
+- The main branch will be tested in as many DAWs as possible.
+
+This plan will ensure that all expected performance indicators will be complete.
+
+If time allows after those tasks are done, the following steps will be taken to completet the remaining advacnced performance indicators:
+
+- More research will be conducted and a third audio effect will be chosen using the same criteria as the second effect.
+- The third effect will be implemented and tested.
+- Installation media will be created to install the .VST3 plugin on any Windows or Mac device.
+
+This installation media will be in the standard format for both Windows and Mac to ensure all potential users have equal access.
 
 ## 3.2. Owen O'Keefe
 - Objective: Implement Chord Recognition model
