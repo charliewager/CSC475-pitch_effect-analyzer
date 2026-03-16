@@ -95,9 +95,10 @@ This installation media will be in the standard format for both Windows and Mac 
   - P4 (advanced): implement optimization techniques
   - P5 (advanced): create midi tests to check accuracy of chord recognition algorithm
 
-- Progress Report:
-changed goals from learn tensorflow, to learn how to implement 
+### 3.1.2 Progress Report
 
+changed goals from learn tensorflow, to learn how to implement 
+![alt text](image-1.png)
 
 ## 3.3. Armaan Chhina
 - Objective: Implement a real-time spectrogram visualization for input and output audio in a JUCE plugin
