@@ -53,8 +53,8 @@ While each member has a primary focus, the project will be collaborative. Everyo
 ## 3.2. Owen O'Keefe
 - Objective: Implement Chord Recognition model
   - ~~P1 (basic): evaluate tensorflow's feasibility for this project for chord recognition~~
-  - P2 (expected): learn tensorflow and how we can implement it for the chord recognition
-  - P3 (expected): train and test model
+  - ~~P2 (expected): learn basic template chord recognition model and how we can implement it for the chord recognition~~
+  - ~~P3 (expected): test model~~
   - P4 (advanced): fully implement model
   - P5 (advanced): evaluate accuracy of model
 
@@ -63,9 +63,10 @@ While each member has a primary focus, the project will be collaborative. Everyo
   - P2 (basic): 
   - P3 (expected): learn optimization techniques
   - P4 (advanced): implement optimization techniques
-  - P5 (advanced): test and check the chord recogntion code
+  - P5 (advanced): create midi tests to check accuracy of chord recognition algorithm
 
 - Progress Report:
+changed goals from learn tensorflow, to learn how to implement 
 
 
 ## 3.3. Armaan Chhina
