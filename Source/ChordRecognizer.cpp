@@ -80,12 +80,13 @@ ChromaVector ChordRecognizer::extractChroma(const std::vector<float>& fftMagnitu
         int midiRounded = (int)std::round(midi);
         int pitchClass  = midiRounded % 12;// freq to midi
         if (pitchClass < 0) pitchClass += 12;
-
+        
+        // adds magnitude of class bin, squaring emphasizes louder frequencies and suppresses noise
         float mag = fftMagnitudes[bin];
         chroma[pitchClass] += mag * mag;
     }
     
-    // adds magnitude of class bin, squaring emphasizes louder frequencies and suppresses noise
+
     float maxVal = *std::max_element(chroma.begin(), chroma.end());
     if (maxVal > 0.f)
         for (auto& v : chroma) v /= maxVal;
