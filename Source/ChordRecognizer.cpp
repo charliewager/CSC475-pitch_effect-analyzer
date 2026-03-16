@@ -72,7 +72,7 @@ ChromaVector ChordRecognizer::extractChroma(const std::vector<float>& fftMagnitu
     for (int bin = 1; bin < numBins; ++bin)// convert each fft bin to freq in Hz
     {
         float freq = bin * (float)sampleRate / (float)fftSize;
-        if (freq < 32.7f || freq > 7902.f) continue;
+        if (freq < 32.7f || freq > 7902.f) continue; // boundary > B8 no longer recognize
 
         
         float midi = 69.f + 12.f * std::log2(freq / 440.f);// convert to midi
