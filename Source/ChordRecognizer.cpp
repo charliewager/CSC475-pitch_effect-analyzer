@@ -21,12 +21,12 @@ ChordRecognizer::ChordRecognizer(double sampleRate, int fftSize)
 void ChordRecognizer::update(const std::vector<float>& fftMagnitudes)
 {
     ChordResult result;
-    result.chroma = extractChroma(fftMagnitudes);
+    result.chroma = extractChroma(fftMagnitudes); // get chroma from fft data
 
     float bestScore = -1.f;
     int   bestIndex = -1;
 
-    for (int i = 0; i < (int)templates.size(); ++i)
+    for (int i = 0; i < (int)templates.size(); ++i)// compare against templates
     {
         float score = cosineSimilarity(result.chroma, templates[i].profile);
         if (score > bestScore)
@@ -36,7 +36,7 @@ void ChordRecognizer::update(const std::vector<float>& fftMagnitudes)
         }
     }
 
-    if (bestIndex >= 0 && bestScore > 0.75f)
+    if (bestIndex >= 0 && bestScore > 0.75f)// confidence level
     {
         result.chordName  = templates[bestIndex].name;
         result.rootNote   = templates[bestIndex].rootNote;
@@ -69,22 +69,23 @@ ChromaVector ChordRecognizer::extractChroma(const std::vector<float>& fftMagnitu
     ChromaVector chroma = {};
     int numBins = fftSize / 2;
 
-    for (int bin = 1; bin < numBins; ++bin)
+    for (int bin = 1; bin < numBins; ++bin)// convert each fft bin to freq in Hz
     {
         float freq = bin * (float)sampleRate / (float)fftSize;
         if (freq < 32.7f || freq > 7902.f) continue;
 
         
-        float midi     = 69.f + 12.f * std::log2(freq / 440.f);
+        float midi = 69.f + 12.f * std::log2(freq / 440.f);// convert to midi
         
         int midiRounded = (int)std::round(midi);
-        int pitchClass  = midiRounded % 12;
+        int pitchClass  = midiRounded % 12;// freq to midi
         if (pitchClass < 0) pitchClass += 12;
 
         float mag = fftMagnitudes[bin];
         chroma[pitchClass] += mag * mag;
     }
-
+    
+    // adds magnitude of class bin, squaring emphasizes louder frequencies and suppresses noise
     float maxVal = *std::max_element(chroma.begin(), chroma.end());
     if (maxVal > 0.f)
         for (auto& v : chroma) v /= maxVal;
@@ -103,13 +104,13 @@ float ChordRecognizer::cosineSimilarity(const ChromaVector& a, const ChromaVecto
     if (normA == 0.f || normB == 0.f) return 0.f;
     return dot / (std::sqrt(normA) * std::sqrt(normB));
 }
-
+// define 9 chord types as intervals in semitones from the root
 void ChordRecognizer::buildTemplates()
 {
     const std::string noteNames[] = {"C","C#","D","D#","E","F",
                                       "F#","G","G#","A","A#","B"};
     const std::vector<std::pair<std::string, std::vector<int>>> shapes = {
-        {"maj",  {0, 4, 7}},
+        {"maj",  {0, 4, 7}}, // c maj  4 semitones up and 7 semitones up  C, E, G
         {"min",  {0, 3, 7}},
         {"dom7", {0, 4, 7, 10}},
         {"maj7", {0, 4, 7, 11}},
@@ -120,7 +121,7 @@ void ChordRecognizer::buildTemplates()
         {"sus4", {0, 5, 7}},
     };
 
-    for (int root = 0; root < 12; ++root)
+    for (int root = 0; root < 12; ++root) // this is the above comments logic
         for (auto& [suffix, intervals] : shapes)
         {
             ChordTemplate t;
@@ -128,10 +129,10 @@ void ChordRecognizer::buildTemplates()
             t.rootNote = root;
             t.profile.fill(0.f);
             for (int interval : intervals)
-                t.profile[(root + interval) % 12] = 1.f;
+                t.profile[(root + interval) % 12] = 1.f; // loop through all 12 root nodes and 9 shapes to build 108 templates total
             float sum = std::accumulate(t.profile.begin(),
                                          t.profile.end(), 0.f);
-            for (auto& v : t.profile) v /= sum;
+            for (auto& v : t.profile) v /= sum; // normalization
             templates.push_back(t);
         }
 }
