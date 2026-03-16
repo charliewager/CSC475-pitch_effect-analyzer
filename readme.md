@@ -59,8 +59,8 @@ While each member has a primary focus, the project will be collaborative. Everyo
   - P5 (advanced): evaluate accuracy of model
 
 - Objective: Learn how to implement chord recognition with juce
-  - P1 (basic): learn how to work with juce
-  - P2 (basic): 
+  - ~~P1 (basic): learn how to work with juce~~
+  - ~~P2 (basic): get armaan's fft data to use chord recognition~~
   - P3 (expected): learn optimization techniques
   - P4 (advanced): implement optimization techniques
   - P5 (advanced): create midi tests to check accuracy of chord recognition algorithm
