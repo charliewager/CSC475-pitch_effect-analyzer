@@ -111,7 +111,8 @@ void ChordRecognizer::buildTemplates()
     const std::string noteNames[] = {"C","C#","D","D#","E","F",
                                       "F#","G","G#","A","A#","B"};
     const std::vector<std::pair<std::string, std::vector<int>>> shapes = {
-        {"maj",  {0, 4, 7}}, // c maj  4 semitones up and 7 semitones up  C, E, G
+        // c maj  4 semitones up and 7 semitones up  C, E, G etc.
+        {"maj",  {0, 4, 7}},
         {"min",  {0, 3, 7}},
         {"dom7", {0, 4, 7, 10}},
         {"maj7", {0, 4, 7, 11}},
