@@ -115,7 +115,7 @@ For the future
 
 - I plan on testing and creating several midi files that have expected output of each chord I place in garageband and creating notepads to compare to the GUI to see how accurate it is for different chord sequences.
 
-- I plan to research and ways on how to use
+- I plan to research ways on how to use
  Enhanced Pitch Class Profile to increase the accuracy of the algorithm. (advanced)
 
  - I plan to implement
