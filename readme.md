@@ -97,7 +97,7 @@ This installation media will be in the standard format for both Windows and Mac 
 
 ### 3.2.2 Progress Report
 
-I first started out trying to implement tensorflow, and also consulted with George whether it was achievable in the given time span of the course, which turned out to be too difficult for the scope of the course. So instead I decided to implement a basic template chord recognition model using chroma extraction and queue scheduling, so far it seems to be working, but still has some uncertainties.
+I first started out trying to implement tensorflow algorithm for chord recognition, and also consulted with George whether it was achievable in the given time span of the course, which turned out to be too difficult for the scope of the course. So instead I decided to implement a basic template chord recognition model using chroma extraction and queue scheduling, so far it seems to be working, but still has some uncertainties.
 
 The implementation works in four stages. First, it takes the FFT magnitude data that Armaan's spectrogram computes and extracts a 12-bin chroma vector from it, which is one bin per pitch class. This is done by mapping each fft frequency bin to its corresponding pitch class (freq to midi), then sums the squared magnitudes for each pitch class. Squaring the magnitude is to emphasize dominant frequencies. 
 
