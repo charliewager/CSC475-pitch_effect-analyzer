@@ -81,23 +81,23 @@ If time allows after those tasks are done, the following steps will be taken to 
 This installation media will be in the standard format for both Windows and Mac to ensure all potential users have equal access.
 
 ## 3.2. Owen O'Keefe
-- Objective: Implement Chord Recognition model
+- Objective: Implement Chord Recognition algorithm
   - ~~P1 (basic): evaluate tensorflow's feasibility for this project for chord recognition~~
   - ~~P2 (expected): learn basic template chord recognition model and how we can implement it for the chord recognition~~
   - ~~P3 (expected): test model~~
-  - P4 (advanced): fully implement model
-  - P5 (advanced): evaluate accuracy of model
+  - P4 (advanced): fully implement algorithm
+  - P5 (advanced): evaluate accuracy of algorithm
 
 - Objective: Learn how to implement chord recognition with juce
   - ~~P1 (basic): learn how to work with juce~~
   - ~~P2 (basic): get armaan's fft data to use chord recognition~~
   - ~~P3 (expected): begin researching optimization techniques~~
-  - P4 (advanced): improve accuracy of the chord recognition
+  - P4 (advanced): improve accuracy of the chord recognition using EPCP
   - P5 (advanced): create midi tests to check accuracy of chord recognition algorithm
 
 ### 3.2.2 Progress Report
 
-I first started out trying to implement tensorflow algorithm for chord recognition, and also consulted with George whether it was achievable in the given time span of the course, which turned out to be too difficult for the scope of the course. So instead I decided to implement a basic template chord recognition model using chroma extraction and queue scheduling, so far it seems to be working, but still has some uncertainties.
+I first started out trying to implement tensorflow algorithm for chord recognition, and also consulted with George whether it was achievable in the given time span of the course, which turned out to be too difficult for the scope of the course. Because of this I have adjusted my goals accordingly. So instead I decided to implement a basic template chord recognition model using chroma extraction and queue scheduling, so far it seems to be working, but still has some uncertainties.
 
 The implementation works in four stages. First, it takes the FFT magnitude data that Armaan's spectrogram computes and extracts a 12-bin chroma vector from it, which is one bin per pitch class. This is done by mapping each fft frequency bin to its corresponding pitch class (freq to midi), then sums the squared magnitudes for each pitch class. Squaring the magnitude is to emphasize dominant frequencies. 
 
@@ -114,7 +114,15 @@ The output is displayed as two labels on the plugin UI, one for the input signal
 For the future
 
 - I plan on testing and creating several midi files that have expected output of each chord I place in garageband and creating notepads to see how accurate it is for different chord sequences.
-- I plan on working with Connor to optimize the alogorithm, and to further improve its accuracy.
+
+- I plan to research ways on how to use the
+ Enhanced Pitch Class Profile method to increase the accuracy of the algorithm.
+
+- If time permits, I plan to lower the confidence threshold from 0.75 and test 
+different threshold values to find the optimal balance between detecting chords 
+accurately and avoiding false detections during silence or ambiguous input.
+
+
 
 
 
