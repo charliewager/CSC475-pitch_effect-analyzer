@@ -126,23 +126,40 @@ different threshold values to find the optimal balance between detecting chords
 accurately and avoiding false detections during silence or ambiguous input. (advanced)
 
 
-
-
-
 ## 3.3. Armaan Chhina
 - Objective: Implement a real-time spectrogram visualization for input and output audio in a JUCE plugin
-  - PI1 (basic): compute and display a real-time FFT magnitude spectrum for the input signal  
-  - PI2 (basic): compute and display a real-time FFT magnitude spectrum for the output signal  
+  - ~~PI1 (basic): compute and display a real-time FFT magnitude spectrum for the input signal~~  
+  - ~~PI2 (basic): compute and display a real-time FFT magnitude spectrum for the output signal~~  
   - PI3 (expected): implement a scrolling spectrogram view showing frequency content over time  
   - PI4 (expected): validate spectrogram accuracy using test tones and live instrument input  
   - PI5 (advanced): add frequency labels and peak highlighting to improve interpretability  
 
 - Objective: Ensure spectrogram performance and stability in real-time audio environments
-  - PI1 (basic): transfer audio data from the audio thread to the GUI thread without blocking  
-  - PI2 (basic): ensure the spectrogram runs in real time at standard buffer sizes and sample rates  
+  - ~~PI1 (basic): transfer audio data from the audio thread to the GUI thread without blocking~~  
+  - ~~PI2 (basic): ensure the spectrogram runs in real time at standard buffer sizes and sample rates~~  
   - PI3 (expected): test spectrogram behavior across multiple DAWs  
   - PI4 (expected): evaluate CPU usage and optimize FFT and rendering where needed  
-  - PI5 (advanced): implement a freeze or snapshot feature to capture spectrogram output  
+  - PI5 (advanced): implement a freeze or snapshot feature to capture spectrogram output
+  
+### 3.3.2 Progress Report
+
+So far the core FFT analysis pipeline has been implemented and both basic performance indicators have been completed. The plugin is now able to compute and display a real time FFT magnitude spectrum for both the input signal and the output signal.
+
+The first step was building the FFT analysis inside the audio processing block. Incoming samples are collected into a fixed size buffer until enough samples are available to perform an FFT frame. Once the buffer is full, a Hann window is applied and a forward FFT transform is computed using JUCE’s dsp::FFT class. The resulting magnitude values are then stored so they can be accessed by the GUI.
+
+A key consideration during this process was making sure the audio thread and GUI thread communicate safely. To avoid blocking the audio thread, a lightweight atomic versioning approach was used. The audio thread writes the FFT magnitude data while the GUI periodically reads a stable snapshot of that data during its timer updates.
+
+After confirming the input spectrum was working correctly, the same approach was extended to analyze the output signal. A second FFT pipeline was added that analyzes the audio after processing occurs in processBlock(). The GUI now displays both the input spectrum and the output spectrum side by side. At the moment they appear very similar because the current processing stage does not significantly modify the signal, but this structure will allow us to visualize how the pitch based effects change the frequency content of the audio.
+
+With these components in place, PI1 and PI2 have been completed. The plugin can now compute FFT magnitude spectra in real time and display them through the GUI.
+
+![alt text](image.png)
+
+The image above shows the input spectrum on the left and the output spectrum on the right. For testing, the output signal was temporarily boosted. As expected, the output spectrum appears higher while keeping the same overall shape, confirming that the output analysis is working correctly.
+
+For the next steps I will focus on extending the visualization from a single frame magnitude spectrum to a scrolling spectrogram that shows frequency content evolving over time. This will allow the team to better observe how the pitch based effects alter the harmonic structure of the signal as it is processed. I will also begin validating the accuracy of the spectrogram using controlled test tones and instrument input to ensure the displayed frequencies match the expected results.
+
+If time allows after the expected indicators are completed, I plan to add frequency labels and peak highlighting to make the visualization easier to interpret during testing and demonstrations.
 
 ## 3.4 Connor Newbery
 ### 3.4.1 Objectives
