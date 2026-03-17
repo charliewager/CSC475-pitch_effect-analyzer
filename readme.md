@@ -97,11 +97,11 @@ This installation media will be in the standard format for both Windows and Mac 
 
 ### 3.2.2 Progress Report
 
-I first started out trying to implement tensorflow algorithm for chord recognition, and also consulted with George whether it was achievable in the given time span of the course, which turned out to be too difficult for the scope of the course. Because of this I have adjusted my goals accordingly. So instead I decided to implement a basic template chord recognition model using chroma extraction and queue scheduling, so far it seems to be working, but still has some uncertainties.
+I first started out trying to implement tensorflow algorithm for chord recognition which didn't turn out to well. Then Charlie and I consulted with George to see whether it was doable in the given time span of the course, but it turned out to be too difficult on JUCE and out of the scope of this course. Because of this I have adjusted my goals accordingly. So instead I decided to implement a basic template chord recognition model using chroma extraction and queue scheduling, so far it seems to be working, but still has some uncertainties.
 
 The implementation works in four stages. First, it takes the FFT magnitude data that Armaan's spectrogram computes and extracts a 12-bin chroma vector from it, which is one bin per pitch class. This is done by mapping each fft frequency bin to its corresponding pitch class (freq to midi), then sums the squared magnitudes for each pitch class. Squaring the magnitude is to emphasize dominant frequencies. 
 
-Second, the chroma vector is compared against a library of 108 pre-built chord templates, 12 root notes times 9 chord types. Each template is a normalized 12-bin profile with 1s at the chord tone positions. 
+Second, the chroma vector is compared against a library of 108 pre-built chord templates, 12 root notes times 9 chord types. Each template is a normalized 12-bin profile with 1s at the chord tone positions.
 
 Third, if the best matching template scores above a 0.75 confidence threshold that chord is accepted and shown on the GUI. Below that threshold the chord is returned as N/C.
 
