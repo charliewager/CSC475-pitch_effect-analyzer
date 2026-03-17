@@ -91,7 +91,7 @@ This installation media will be in the standard format for both Windows and Mac 
 - Objective: Learn how to implement chord recognition with juce
   - ~~P1 (basic): learn how to work with juce~~
   - ~~P2 (basic): get armaan's fft data to use chord recognition~~
-  - ~~P3 (expected): begin researching optimization techniques~~
+  - ~~P3 (expected): use Juce's GUI to see the accuracy of the chord recognition algorithm~~
   - P4 (advanced): improve accuracy of the chord recognition using EPCP
   - P5 (advanced): create midi tests to check accuracy of chord recognition algorithm
 
@@ -101,7 +101,7 @@ I first started out trying to implement tensorflow algorithm for chord recogniti
 
 The implementation works in four stages. First, it takes the FFT magnitude data that Armaan's spectrogram computes and extracts a 12-bin chroma vector from it, which is one bin per pitch class. This is done by mapping each fft frequency bin to its corresponding pitch class (freq to midi), then sums the squared magnitudes for each pitch class. Squaring the magnitude is to emphasize dominant frequencies. 
 
-Second, the chroma vector is compared against a library of 108 pre-built chord templates, 12 root notes times 9 chord types. Each template is a normalized 12-bin profile with 1s at the chord tone positions. The comparison uses cosine similarity, which measures the angle between the two vectors and works regardless of how loud the signal is.
+Second, the chroma vector is compared against a library of 108 pre-built chord templates, 12 root notes times 9 chord types. Each template is a normalized 12-bin profile with 1s at the chord tone positions. 
 
 Third, if the best matching template scores above a 0.75 confidence threshold that chord is accepted and shown on the GUI. Below that threshold the chord is returned as N/C.
 
