@@ -91,14 +91,32 @@ This installation media will be in the standard format for both Windows and Mac 
 - Objective: Learn how to implement chord recognition with juce
   - ~~P1 (basic): learn how to work with juce~~
   - ~~P2 (basic): get armaan's fft data to use chord recognition~~
-  - P3 (expected): learn optimization techniques
-  - P4 (advanced): implement optimization techniques
+  - ~~P3 (expected): begin researching optimization techniques~~
+  - P4 (advanced): improve accuracy of the chord recognition
   - P5 (advanced): create midi tests to check accuracy of chord recognition algorithm
 
-### 3.1.2 Progress Report
+### 3.2.2 Progress Report
 
-changed goals from learn tensorflow, to learn how to implement 
-![alt text](image-1.png)
+I first started out trying to implement tensorflow, and also consulted with George whether it was achievable in the given time span of the course, which turned out to be too difficult for the scope of the course. So instead I decided to implement a basic template chord recognition model using chroma extraction and queue scheduling, so far it seems to be working, but still has some uncertainties.
+
+The implementation works in four stages. First, it takes the FFT magnitude data that Armaan's spectrogram computes and extracts a 12-bin chroma vector from it, which is one bin per pitch class. This is done by mapping each fft frequency bin to its corresponding pitch class (freq to midi), then sums the squared magnitudes for each pitch class. Squaring the magnitude is to emphasize dominant frequencies. 
+
+Second, the chroma vector is compared against a library of 108 pre-built chord templates, 12 root notes times 9 chord types. Each template is a normalized 12-bin profile with 1s at the chord tone positions. The comparison uses cosine similarity, which measures the angle between the two vectors and works regardless of how loud the signal is.
+
+Third, if the best matching template scores above a 0.75 confidence threshold that chord is accepted and shown on the GUI. Below that threshold the chord is returned as N/C.
+
+Fourth, the result is passed through a queue using JUCE's AbstractFifo so the GUI thread can read the chord data without blocking the audio thread. This is for real-time performance, the audio thread only writes to the queue and the GUI thread only reads from it, so they never interfere with each other.
+
+The output is displayed as two labels on the plugin UI, one for the input signal and one for the output signal, so users can see in real time whether the chorus effect has an effect on the chord played. You can view this below.
+
+![chord recognization and visualization](image-1.png)
+
+For the future
+
+- I plan on testing and creating several midi files that have expected output of each chord I place in garageband and creating notepads to see how accurate it is for different chord sequences.
+- I plan on working with Connor to optimize the alogorithm, and to further improve its accuracy.
+
+
 
 ## 3.3. Armaan Chhina
 - Objective: Implement a real-time spectrogram visualization for input and output audio in a JUCE plugin
