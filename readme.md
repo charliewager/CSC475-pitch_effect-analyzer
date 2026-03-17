@@ -145,20 +145,35 @@ accurately and avoiding false detections during silence or ambiguous input. (adv
   - PI5 (advanced): implement a freeze or snapshot feature to capture spectrogram output  
 
 ## 3.4 Connor Newbery
+### 3.4.1 Objectives
 - Objective: Read associated literature
-  - P1 (basic): Collect literature related to non-machine learning algorithms for chord recognition.
-  - P2 (basic): Read and synthesize findings on non-machine learning algorithms.
-  - P3 (expected): Collect literature related to machine learning algorithms for chord recognition.
-  - P4 (advanced): Read and synthesize findings on machine learning algorithms.
+  - ~~P1 (basic): Collect literature related to non-machine learning algorithms for chord recognition.~~
+  - ~~P2 (basic): Read and synthesize findings on non-machine learning algorithms.~~
+  - ~~P3 (expected): Collect literature related to machine learning algorithms for chord recognition.~~
+  - ~~P4 (advanced): Read and synthesize findings on machine learning algorithms.~~
   - P5 (advanced): Determine most effective algorithms from literature.
  
-- Objective: Design Chord Recognition Algorithm
-  - P1 (basic): Set up environment and determine appropriate languages and frameworks for test-algorithm development.
-  - P2 (basic): Distill theoretical concepts, determine which are most applicable for our purposes.
-  - P3 (expected): Basic implementations of algorithms from literature.
-  - P4 (advanced): Customize algorithms.
-  - P5 (advanced): Implement test version (proof of concept) / Pass on to owen.
+- ~~Objective: Design Chord Recognition Algorithm~~ This objective is no longer relevant to our project
+  - ~~P1 (basic): Set up environment and determine appropriate languages and frameworks for test-algorithm development.~~
+  - ~~P2 (basic): Distill theoretical concepts, determine which are most applicable for our purposes.~~
+  - ~~P3 (expected): Basic implementations of algorithms from literature.~~
+  - ~~P4 (advanced): Customize algorithms.~~
+  - ~~P5 (advanced): Implement test version (proof of concept) / Pass on to owen.~~
+  
+- Updated Objective:
+  - P1 (Basic): Review Owen’s code/template
+  - P2 (Basic): Get current template working in Garageband
+  - P3 (Expected): Add depth of detection (add additional chord types to be recognized)
+  - P4 (Expected): Improve accuracy of detection
+  - P5 (Advanced): Improve detection speed by 25%
  
+### 3.4.2 Progress Report
+My primary objective at the outset of this project was to research approaches for implementing chord recognition algorithms. I began with a broad review of open-source chord recognition models and non–machine learning methods, then progressed to a more in-depth exploration of the scientific literature. This included reading about advanced approaches, particularly machine learning-based methods. Many of these studies used artificial neural networks trained on large, open-source music datasets to predict chords with high accuracy. While these approaches demonstrated strong performance, they were beyond the scope of our team given the project timeline and our current understanding of machine learning. Furthermore, given my own limited understanding of machine learning, it was very challenging to determine which would algorithms would work best for our project, even if we had the technical ability to integrate it.
+
+Following this research, and through discussions with George, our team decided to use a template-based chord recognition algorithm, which Owen began implementing. More information about this is writte above, in Owen's progree report. Initially, for my second objective I was responsible for designing a theoretical algorithm and developing a prototype for Owen to build upon.  As a result of our team deciding on a template-based algorithm, my second objective had to be adjusted. However, I did successfully completed the first basic component of this objective by setting up the development environment and configuring JUCE on my machine.
+
+Moving forward, my objective for the remainder of the course is to build upon the existing template-based implementation. I will focus on improving the algorithm’s accuracy and depth of recognition, as well as optimizing performance to reduce missed chords and improve overall processing efficiency.
+
 ## 4. TOOL DESCRIPTION
 
 We will use C++ and the JUCE framework to develop this project. JUCE is a C++ framework for developing VST and AU audio plugins. The JUCE framework contains built-in functions for digital signal processing (DSP), including FFT, convolution, windowing, filtering and delay functions (cite JUCE docs for dsp). In addition to this JUCE provides tools for creating GUIs and project generation via Projucer or CMake. Any DSP functions or audio effects that are needed and not provided as functions by the JUCE framework will be implemented using information from the following textbooks: Designing Audio Effect Plugins in C++[4], DAFX[1], and Audio effects theory, implementation and application [5].
