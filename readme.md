@@ -115,8 +115,11 @@ For the future
 
 - I plan on testing and creating several midi files that have expected output of each chord I place in garageband and creating notepads to compare to the GUI to see how accurate it is for different chord sequences.
 
-- I plan to research ways on how to use the
- Enhanced Pitch Class Profile method to increase the accuracy of the algorithm. (advanced)
+- I plan to research and ways on how to use
+ Enhanced Pitch Class Profile to increase the accuracy of the algorithm. (advanced)
+
+ - I plan to implement
+ Enhanced Pitch Class Profile to increase the accuracy of the algorithm. (advanced)
 
 - If time permits, I plan to lower the confidence threshold from 0.75 and test 
 different threshold values to find the optimal balance between detecting chords 
