@@ -37,64 +37,160 @@ While each member has a primary focus, the project will be collaborative. Everyo
 ## 3.1. Charlie Wager
 
 - Objective: Create JUCE project, set up and test Plugin.
-  - P1 (basic): intitialize JUCE plugin.
-  - P2 (basic): ensure all group members can run the plugin.
+  - ~~P1 (basic): intitialize JUCE plugin.~~
+  - ~~P2 (basic): ensure all group members can run the plugin.~~
   - P3 (expected): test plugin in multiple DAWs.
   - P4 (advanced): create installation media for windows.
   - P5 (advanced): create installation media for Mac.
   
 - Objective: Design pitch-based audio effect(s).
-  - P1 (basic): implement a chorus effect.
-  - P2 (expected): add multiple voices to chorus effect.
+  - ~~P1 (basic): implement a chorus effect.~~
+  - ~~P2 (expected): add multiple voices to chorus effect.~~
   - P3 (expected): implement a second pitch-based effect.
   - P4 (advanced): add complexity to the second effect.
   - P5 (advanced): add a third pitch-based audio effect.
+ 
+### 3.1.2 Progress Report
+
+As can be seen above, the JUCE plugin has been initialized and all group members have successfully run the plugin on their devices.
+In addition to this the chorus effect has been implemented and a multi-voiced mode has been added.
+
+Implementing the single voice chorus was simple enough but the multi-voiced mode posed a real challenge. The single voice chorus can be implemented using the built-in chorus porcessor in JUCE.
+It was assumed that the multi-voiced mode would be similarily easy and could be implemented by simply using multiple instances of this chorus processor to process the audio block.
+This approach did end up creating a sort of chorus effect, but this was not a ture multi-voiced chorus since it resulted in the chorus intances processing the audio block in series and not in parallel.
+To put it simply this approach ended up applying one chorus after another, essentially adding chorus to a singal that already had chorus - which was not the goal.
+This was fixed by creating a copy of the dry singal for each chorus instance, which resulted in a true multi-voiced chorus. After tweaking the spread and mix parameters, a lush mutli-voiced chorus mode was acheived.
+The implementation of both effects can be seen between lines 192 and 301 of the PluginPorcessor.cpp file.
+
+As for the timeline and goals for the final product, these remain unchanged from what is mentioned in section 3.1. The steps that will be taken to accomplish these are as follows:
+
+- Research will be conducted to select the second audio effect. The ideal effect will not be extremely complex to implement and will noticably alter the frequency spectrum. Ideally this effect would cause a drastic enough change so that the output chord would be changed from the input chord. The candidates for this effect include a flanger, a phaser, a ring modulator, and a pitch shifter.
+- The chosen effect will be implemented.
+- Some complexity/depth will be added to the second effect, such as more voices or shifts, or a more musically insteresting shift.\
+- All branches will be merged to main.
+- The main branch will be tested in as many DAWs as possible.
+
+This plan will ensure that all expected performance indicators will be complete.
+
+If time allows after those tasks are done, the following steps will be taken to completet the remaining advacnced performance indicators:
+
+- More research will be conducted and a third audio effect will be chosen using the same criteria as the second effect.
+- The third effect will be implemented and tested.
+- Installation media will be created to install the .VST3 plugin on any Windows or Mac device.
+
+This installation media will be in the standard format for both Windows and Mac to ensure all potential users have equal access.
 
 ## 3.2. Owen O'Keefe
-- Objective: Implement Chord Recognition model
-  - P1 (basic): evaluate tensorflow's feasibility for this project for chord recognition
-  - P2 (expected): learn tensorflow and how we can implement it for the chord recognition
-  - P3 (expected): train and test model
-  - P4 (advanced): fully implement model
-  - P5 (advanced): evaluate accuracy of model
+- Objective: Implement Chord Recognition algorithm
+  - ~~P1 (basic): evaluate tensorflow's feasibility for this project for chord recognition~~
+  - ~~P2 (expected): learn basic template chord recognition model and how we can implement it for the chord recognition~~
+  - ~~P3 (expected): test model~~
+  - P4 (advanced): fully implement algorithm
+  - P5 (advanced): evaluate accuracy of algorithm
 
-- Objective: Learn Tensorflow
-  - P1 (basic): learn tensorflow in C++
-  - P2 (basic): learn how to use TensorFlow for chord recognition
-  - P3 (expected): learn optimization techniques
-  - P4 (advanced): implement optimization techniques
-  - P5 (advanced): test and check the chord recogntion code
+- Objective: Learn how to implement chord recognition with juce
+  - ~~P1 (basic): learn how to work with juce~~
+  - ~~P2 (basic): get armaan's fft data to use chord recognition~~
+  - ~~P3 (expected): use Juce's GUI to see the accuracy of the chord recognition algorithm~~
+  - P4 (advanced): improve accuracy of the chord recognition using EPCP
+  - P5 (advanced): create midi tests to check accuracy of chord recognition algorithm
+
+### 3.2.2 Progress Report
+
+I first started out trying to implement tensorflow algorithm for chord recognition which didn't turn out to well. Then Charlie and I consulted with George to see whether it was doable in the given time span of the course, but it turned out to be too difficult on JUCE and out of the scope of this course. Because of this I have adjusted my goals accordingly. So instead I decided to implement a basic template chord recognition model using chroma extraction and queue scheduling, so far it seems to be working, but still has some uncertainties.
+
+The implementation works in four stages. First, it takes the FFT magnitude data that Armaan's spectrogram computes and extracts a 12-bin chroma vector from it, which is one bin per pitch class. This is done by mapping each fft frequency bin to its corresponding pitch class (freq to midi), then sums the squared magnitudes for each pitch class. Squaring the magnitude is to emphasize dominant frequencies. 
+
+Second, the chroma vector is compared against a library of 108 pre-built chord templates, 12 root notes times 9 chord types. Each template is a normalized 12-bin profile with 1s at the chord tone positions.
+
+Third, if the best matching template scores above a 0.75 confidence threshold that chord is accepted and shown on the GUI. Below that threshold the chord is returned as N/C.
+
+Fourth, the result is passed through a queue using JUCE's AbstractFifo so the GUI thread can read the chord data without blocking the audio thread. This is for real-time performance, the audio thread only writes to the queue and the GUI thread only reads from it, so they never interfere with each other.
+
+The output is displayed as two labels on the plugin UI, one for the input signal and one for the output signal, so users can see in real time whether the chorus effect has an effect on the chord played. You can view this below.
+
+![chord recognization and visualization](image-1.png)
+
+For the future
+
+- I plan on testing and creating several midi files that have expected output of each chord I place in garageband and creating notepads to compare to the GUI to see how accurate it is for different chord sequences.
+
+- I plan to research ways on how to use
+ Enhanced Pitch Class Profile to increase the accuracy of the algorithm. (advanced)
+
+ - I plan to implement
+ Enhanced Pitch Class Profile to increase the accuracy of the algorithm. (advanced)
+
+- If time permits, I plan to lower the confidence threshold from 0.75 and test 
+different threshold values to find the optimal balance between detecting chords 
+accurately and avoiding false detections during silence or ambiguous input. (advanced)
+
 
 ## 3.3. Armaan Chhina
 - Objective: Implement a real-time spectrogram visualization for input and output audio in a JUCE plugin
-  - PI1 (basic): compute and display a real-time FFT magnitude spectrum for the input signal  
-  - PI2 (basic): compute and display a real-time FFT magnitude spectrum for the output signal  
+  - ~~PI1 (basic): compute and display a real-time FFT magnitude spectrum for the input signal~~  
+  - ~~PI2 (basic): compute and display a real-time FFT magnitude spectrum for the output signal~~  
   - PI3 (expected): implement a scrolling spectrogram view showing frequency content over time  
   - PI4 (expected): validate spectrogram accuracy using test tones and live instrument input  
   - PI5 (advanced): add frequency labels and peak highlighting to improve interpretability  
 
 - Objective: Ensure spectrogram performance and stability in real-time audio environments
-  - PI1 (basic): transfer audio data from the audio thread to the GUI thread without blocking  
-  - PI2 (basic): ensure the spectrogram runs in real time at standard buffer sizes and sample rates  
+  - ~~PI1 (basic): transfer audio data from the audio thread to the GUI thread without blocking~~  
+  - ~~PI2 (basic): ensure the spectrogram runs in real time at standard buffer sizes and sample rates~~  
   - PI3 (expected): test spectrogram behavior across multiple DAWs  
   - PI4 (expected): evaluate CPU usage and optimize FFT and rendering where needed  
-  - PI5 (advanced): implement a freeze or snapshot feature to capture spectrogram output  
+  - PI5 (advanced): implement a freeze or snapshot feature to capture spectrogram output
+  
+### 3.3.2 Progress Report
+
+So far the core FFT analysis pipeline has been implemented and both basic performance indicators have been completed. The plugin is now able to compute and display a real time FFT magnitude spectrum for both the input signal and the output signal.
+
+The first step was building the FFT analysis inside the audio processing block. Incoming samples are collected into a fixed size buffer until enough samples are available to perform an FFT frame. Once the buffer is full, a Hann window is applied and a forward FFT transform is computed using JUCE’s dsp::FFT class. The resulting magnitude values are then stored so they can be accessed by the GUI.
+
+A key consideration during this process was making sure the audio thread and GUI thread communicate safely. To avoid blocking the audio thread, a lightweight atomic versioning approach was used. The audio thread writes the FFT magnitude data while the GUI periodically reads a stable snapshot of that data during its timer updates.
+
+After confirming the input spectrum was working correctly, the same approach was extended to analyze the output signal. A second FFT pipeline was added that analyzes the audio after processing occurs in processBlock(). The GUI now displays both the input spectrum and the output spectrum side by side. At the moment they appear very similar because the current processing stage does not significantly modify the signal, but this structure will allow us to visualize how the pitch based effects change the frequency content of the audio.
+
+With these components in place, PI1 and PI2 have been completed. The plugin can now compute FFT magnitude spectra in real time and display them through the GUI.
+
+![alt text](image.png)
+
+The image above shows the input spectrum on the left and the output spectrum on the right. For testing, the output signal was temporarily boosted. As expected, the output spectrum appears higher while keeping the same overall shape, confirming that the output analysis is working correctly.
+
+For the next steps I will focus on extending the visualization from a single frame magnitude spectrum to a scrolling spectrogram that shows frequency content evolving over time. This will allow the team to better observe how the pitch based effects alter the harmonic structure of the signal as it is processed. I will also begin validating the accuracy of the spectrogram using controlled test tones and instrument input to ensure the displayed frequencies match the expected results.
+
+If time allows after the expected indicators are completed, I plan to add frequency labels and peak highlighting to make the visualization easier to interpret during testing and demonstrations.
 
 ## 3.4 Connor Newbery
+### 3.4.1 Objectives
 - Objective: Read associated literature
-  - P1 (basic): Collect literature related to non-machine learning algorithms for chord recognition.
-  - P2 (basic): Read and synthesize findings on non-machine learning algorithms.
-  - P3 (expected): Collect literature related to machine learning algorithms for chord recognition.
-  - P4 (advanced): Read and synthesize findings on machine learning algorithms.
+  - ~~P1 (basic): Collect literature related to non-machine learning algorithms for chord recognition.~~
+  - ~~P2 (basic): Read and synthesize findings on non-machine learning algorithms.~~
+  - ~~P3 (expected): Collect literature related to machine learning algorithms for chord recognition.~~
+  - ~~P4 (advanced): Read and synthesize findings on machine learning algorithms.~~
   - P5 (advanced): Determine most effective algorithms from literature.
  
-- Objective: Design Chord Recognition Algorithm
-  - P1 (basic): Set up environment and determine appropriate languages and frameworks for test-algorithm development.
-  - P2 (basic): Distill theoretical concepts, determine which are most applicable for our purposes.
-  - P3 (expected): Basic implementations of algorithms from literature.
-  - P4 (advanced): Customize algorithms.
-  - P5 (advanced): Implement test version (proof of concept) / Pass on to owen.
+- ~~Objective: Design Chord Recognition Algorithm~~ This objective is no longer relevant to our project
+  - ~~P1 (basic): Set up environment and determine appropriate languages and frameworks for test-algorithm development.~~
+  - ~~P2 (basic): Distill theoretical concepts, determine which are most applicable for our purposes.~~
+  - ~~P3 (expected): Basic implementations of algorithms from literature.~~
+  - ~~P4 (advanced): Customize algorithms.~~
+  - ~~P5 (advanced): Implement test version (proof of concept) / Pass on to owen.~~
+  
+- Updated Objective:
+  - P1 (Basic): Review Owen’s code/template
+  - P2 (Basic): Get current template working in Garageband
+  - P3 (Expected): Add depth of detection (add additional chord types to be recognized)
+  - P4 (Expected): Improve accuracy of detection
+  - P5 (Advanced): Improve detection speed by 25%
  
+### 3.4.2 Progress Report
+My primary objective at the outset of this project was to research approaches for implementing chord recognition algorithms. I began with a broad review of open-source chord recognition models and non–machine learning methods, then progressed to a more in-depth exploration of the scientific literature. This included reading about advanced approaches, particularly machine learning-based methods. Many of these studies used artificial neural networks trained on large, open-source music datasets to predict chords with high accuracy. While these approaches demonstrated strong performance, they were beyond the scope of our team given the project timeline and our current understanding of machine learning. Furthermore, given my own limited understanding of machine learning, it was very challenging to determine which would algorithms would work best for our project, even if we had the technical ability to integrate it.
+
+Following this research, and through discussions with George, our team decided to use a template-based chord recognition algorithm, which Owen began implementing. More information about this is writte above, in Owen's progree report. Initially, for my second objective I was responsible for designing a theoretical algorithm and developing a prototype for Owen to build upon.  As a result of our team deciding on a template-based algorithm, my second objective had to be adjusted. However, I did successfully completed the first basic component of this objective by setting up the development environment and configuring JUCE on my machine.
+
+Moving forward, my objective for the remainder of the course is to build upon the existing template-based implementation. I will focus on improving the algorithm’s accuracy and depth of recognition, as well as optimizing performance to reduce missed chords and improve overall processing efficiency.
+
 ## 4. TOOL DESCRIPTION
 
 We will use C++ and the JUCE framework to develop this project. JUCE is a C++ framework for developing VST and AU audio plugins. The JUCE framework contains built-in functions for digital signal processing (DSP), including FFT, convolution, windowing, filtering and delay functions (cite JUCE docs for dsp). In addition to this JUCE provides tools for creating GUIs and project generation via Projucer or CMake. Any DSP functions or audio effects that are needed and not provided as functions by the JUCE framework will be implemented using information from the following textbooks: Designing Audio Effect Plugins in C++[4], DAFX[1], and Audio effects theory, implementation and application [5].
