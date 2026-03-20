@@ -69,23 +69,30 @@ ChromaVector ChordRecognizer::extractChroma(const std::vector<float>& fftMagnitu
     ChromaVector chroma = {};
     int numBins = fftSize / 2;
 
-    for (int bin = 1; bin < numBins; ++bin)// convert each fft bin to freq in Hz
+    for (int bin = 1; bin < numBins; ++bin)
     {
         float freq = bin * (float)sampleRate / (float)fftSize;
-        if (freq < 32.7f || freq > 7902.f) continue; // boundary > B8 no longer recognize
+        if (freq < 32.7f || freq > 7902.f) continue;
 
-        
-        float midi = 69.f + 12.f * std::log2(freq / 440.f);// convert to midi
-        
+        float midi      = 69.f + 12.f * std::log2(freq / 440.f);
         int midiRounded = (int)std::round(midi);
-        int pitchClass  = midiRounded % 12;// freq to midi
+        int pitchClass  = midiRounded % 12;
         if (pitchClass < 0) pitchClass += 12;
-        
-        // adds magnitude of class bin, squaring emphasizes louder frequencies and suppresses noise
+
+        // EPCP: weight by harmonic importance
+        // Ask "could this frequency be a harmonic of a lower fundamental?"
+        // If so, downweight it so overtones don't pollute other pitch classes
+        float harmonicWeight = 0.f;
+        for (int h = 1; h <= 6; ++h)
+        {
+            float fundamental = freq / h;
+            if (fundamental >= 32.7f && fundamental <= 1600.f)
+                harmonicWeight += 1.f / (float)(h * h);
+        }
+
         float mag = fftMagnitudes[bin];
-        chroma[pitchClass] += mag * mag;
+        chroma[pitchClass] += mag * mag * harmonicWeight;
     }
-    
 
     float maxVal = *std::max_element(chroma.begin(), chroma.end());
     if (maxVal > 0.f)
