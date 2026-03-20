@@ -92,7 +92,7 @@ This installation media will be in the standard format for both Windows and Mac 
   - ~~P1 (basic): learn how to work with juce~~
   - ~~P2 (basic): get armaan's fft data to use chord recognition~~
   - ~~P3 (expected): use Juce's GUI to see the accuracy of the chord recognition algorithm~~
-  - P4 (advanced): improve accuracy of the chord recognition using EPCP
+  - ~~P4 (advanced): improve accuracy of the chord recognition using EPCP~~
   - P5 (advanced): create midi tests to check accuracy of chord recognition algorithm
 
 ### 3.2.2 Progress Report
