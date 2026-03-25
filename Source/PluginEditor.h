@@ -11,7 +11,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "SpectrumComponent.h"
-
+#include "SpectrogramComponent.h"
 
 //==============================================================================
 /**
@@ -32,6 +32,7 @@ private:
     CSC475pitch_effectanalyzerAudioProcessor& audioProcessor;
     SpectrumComponent inputSpectrum;
     SpectrumComponent outputSpectrum;
+    SpectrogramComponent inputSpectrogram;
     void timerCallback() override;
 
 
