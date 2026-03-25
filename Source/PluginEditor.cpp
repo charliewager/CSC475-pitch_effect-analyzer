@@ -16,6 +16,7 @@ CSC475pitch_effectanalyzerAudioProcessorEditor::CSC475pitch_effectanalyzerAudioP
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     addAndMakeVisible(inputSpectrum);
+    addAndMakeVisible(inputSpectrogram);
     addAndMakeVisible(outputSpectrum);
     setSize(600, 400);
     startTimerHz(30);
@@ -49,11 +50,16 @@ void CSC475pitch_effectanalyzerAudioProcessorEditor::resized()
     // subcomponents in your editor..
     auto area = getLocalBounds().reduced(20);
 
-    auto left = area.removeFromLeft(area.getWidth() / 2).reduced(10);
-    auto right = area.reduced(10);
+    auto top = area.removeFromTop(area.getHeight() / 2);
+    auto bottom = area;
 
-    inputSpectrum.setBounds(left);
-    outputSpectrum.setBounds(right);
+    auto leftTop = top.removeFromLeft(top.getWidth() / 2).reduced(10);
+    auto rightTop = top.reduced(10);
+
+    inputSpectrum.setBounds(leftTop);
+    outputSpectrum.setBounds(rightTop);
+
+    inputSpectrogram.setBounds(bottom.reduced(10));
 
 }
 
@@ -64,6 +70,8 @@ void CSC475pitch_effectanalyzerAudioProcessorEditor::timerCallback()
 
   if (audioProcessor.getLatestMagnitudes(mags)){
     inputSpectrum.setMagnitudes(mags);
+    inputSpectrogram.pushMagnitudes(mags);
+
   }
   if (audioProcessor.getLatestOutputMagnitudes(outputMags)){
       outputSpectrum.setMagnitudes(outputMags);
