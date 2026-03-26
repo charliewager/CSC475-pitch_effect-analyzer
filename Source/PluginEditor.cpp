@@ -67,6 +67,7 @@ CSC475pitch_effectanalyzerAudioProcessorEditor::CSC475pitch_effectanalyzerAudioP
 
     effect.addItem("Chorus", 1);
     effect.addItem("Multi-Voice Chorus", 2);
+    effect.addItem("Ring Modulator", 3);
     effect.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(effect);
 

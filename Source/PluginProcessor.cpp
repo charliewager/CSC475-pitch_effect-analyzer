@@ -155,6 +155,11 @@ void CSC475pitch_effectanalyzerAudioProcessor::prepareToPlay (double sampleRate,
         c.setCentreDelay(7.5f);
         c.setMix(0.5f);
     }
+
+    // Reset ring mod state
+    rmPhase = 0.0f;
+    rmFeedbackState[0] = 0.0f;
+    rmFeedbackState[1] = 0.0f;
 }
 
 void CSC475pitch_effectanalyzerAudioProcessor::releaseResources()
@@ -298,6 +303,52 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
         buffer.applyGain(wetLevel / panGainSum);
         for (int ch = 0; ch < numChannels; ++ch)
             buffer.addFrom(ch, 0, dryBuffer, ch, 0, numSamples, 1.0f - wetLevel);
+
+    } else if (effectIndex == 2) // Ring Modulator
+    {
+        // Remap rate (0.1–2.0) to carrier frequency (20–2000 Hz) exponentially
+        const float rNorm     = (r - 0.1f) / 1.9f;
+        const float carrierHz = 20.0f * std::pow(100.0f, rNorm);
+
+        // Scale feedback to -0.5..0.5 (stable: loop gain = |fb * sin| <= 0.5)
+        const float rmFeedbackGain = f * 2.0f;
+
+        // depth is used directly as wet fraction (0 = dry, 1 = fully ring-modulated)
+        const float wetLevel = d;
+
+        const double phaseIncrement = (juce::MathConstants<double>::twoPi * carrierHz)
+                                      / getSampleRate();
+
+        const int numSamples  = buffer.getNumSamples();
+        const int numChannels = buffer.getNumChannels();
+
+        for (int n = 0; n < numSamples; ++n)
+        {
+            // Carrier computed once per sample, shared across channels
+            const float carrier = std::sin(rmPhase);
+
+            for (int ch = 0; ch < numChannels; ++ch)
+            {
+                const float inputSample = buffer.getSample(ch, n);
+
+                // Mix feedback into input before modulation
+                const float modInput = inputSample + rmFeedbackGain * rmFeedbackState[ch];
+
+                // Ring modulate
+                const float wetSample = modInput * carrier;
+
+                // Update feedback state
+                rmFeedbackState[ch] = wetSample;
+
+                // Wet/dry blend
+                buffer.setSample(ch, n, (1.0f - wetLevel) * inputSample + wetLevel * wetSample);
+            }
+
+            // Advance phase; subtract rather than fmod for speed
+            rmPhase += static_cast<float>(phaseIncrement);
+            if (rmPhase >= juce::MathConstants<float>::twoPi)
+                rmPhase -= juce::MathConstants<float>::twoPi;
+        }
     }
 }
 
@@ -342,7 +393,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CSC475pitch_effectanalyzerAu
     param_layout.add(std::make_unique<AudioParameterFloat>("rate", "Rate", NormalisableRange<float>(0.1f, 2.0f, 0.001f, 1.0f), 0.1));
     param_layout.add(std::make_unique<AudioParameterFloat>("depth", "Depth", NormalisableRange<float>(0.0f, 1.0f, 0.001f, 1.0f), 0.25));
     param_layout.add(std::make_unique<AudioParameterFloat>("feedback", "Feedback", NormalisableRange<float>(-0.25f, 0.25f, 0.001f, 1.0f), 0));
-    param_layout.add(std::make_unique<AudioParameterChoice>("effect", "Effect Type Choice", StringArray("Chorus", "Multi-Voice Chorus"), 0));
+    param_layout.add(std::make_unique<AudioParameterChoice>("effect", "Effect Type Choice", StringArray("Chorus", "Multi-Voice Chorus", "Ring Modulator"), 0));
 
     // return layout
     return param_layout;

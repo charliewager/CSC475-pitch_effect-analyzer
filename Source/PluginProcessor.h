@@ -60,12 +60,18 @@ public:
 
 private:
     
+    // chorus things
     static constexpr int numVoices = 6;
     juce::dsp::Chorus<float> chorusVoices[numVoices];
 
     juce::AudioBuffer<float> dryBuffer;
     juce::AudioBuffer<float> voiceBuffer;
 
+    // ring mod stuff
+    float rmPhase { 0.0f };
+    float rmFeedbackState[2] { 0.0f, 0.0f };
+
+    //general things
     juce::AudioParameterFloat* rate{ nullptr };
     juce::AudioParameterFloat* depth{ nullptr };
     juce::AudioParameterFloat* feedback{ nullptr };
