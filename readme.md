@@ -46,7 +46,7 @@ While each member has a primary focus, the project will be collaborative. Everyo
 - Objective: Design pitch-based audio effect(s).
   - ~~P1 (basic): implement a chorus effect.~~
   - ~~P2 (expected): add multiple voices to chorus effect.~~
-  - P3 (expected): implement a second pitch-based effect.
+  - ~~P3 (expected): implement a second pitch-based effect.~~
   - P4 (advanced): add complexity to the second effect.
   - P5 (advanced): add a third pitch-based audio effect.
  
