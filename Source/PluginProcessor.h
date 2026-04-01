@@ -70,6 +70,10 @@ private:
     // ring mod stuff
     float rmPhase { 0.0f };
     float rmFeedbackState[2] { 0.0f, 0.0f };
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Multiplicative> rmSmoothedCarrierHz;
+    float rmDCBlockX[2] { 0.0f, 0.0f };   // DC blocker: previous input per channel
+    float rmDCBlockY[2] { 0.0f, 0.0f };   // DC blocker: previous output per channel
+    juce::dsp::Oversampling<float> rmOversampling { 2, 1, juce::dsp::Oversampling<float>::filterHalfBandPolyphaseIIR };
 
     //general things
     juce::AudioParameterFloat* rate{ nullptr };

@@ -157,9 +157,14 @@ void CSC475pitch_effectanalyzerAudioProcessor::prepareToPlay (double sampleRate,
     }
 
     // Reset ring mod state
+    rmOversampling.initProcessing(samplesPerBlock);
+    const double osRate = sampleRate * rmOversampling.getOversamplingFactor();
     rmPhase = 0.0f;
-    rmFeedbackState[0] = 0.0f;
-    rmFeedbackState[1] = 0.0f;
+    rmFeedbackState[0] = rmFeedbackState[1] = 0.0f;
+    rmSmoothedCarrierHz.reset(osRate, 0.05);          // 50 ms ramp at oversampled rate
+    rmSmoothedCarrierHz.setCurrentAndTargetValue(20.0f);
+    rmDCBlockX[0] = rmDCBlockX[1] = 0.0f;
+    rmDCBlockY[0] = rmDCBlockY[1] = 0.0f;
 }
 
 void CSC475pitch_effectanalyzerAudioProcessor::releaseResources()
@@ -306,49 +311,55 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
 
     } else if (effectIndex == 2) // Ring Modulator
     {
-        // Remap rate (0.1–2.0) to carrier frequency (20–2000 Hz) exponentially
         const float rNorm     = (r - 0.1f) / 1.9f;
         const float carrierHz = 20.0f * std::pow(100.0f, rNorm);
 
-        // Scale feedback to -0.5..0.5 (stable: loop gain = |fb * sin| <= 0.5)
         const float rmFeedbackGain = f * 2.0f;
+        const float wetLevel  = d;
+        const float twoPi     = juce::MathConstants<float>::twoPi;
+        const double osRate   = getSampleRate() * rmOversampling.getOversamplingFactor();
 
-        // depth is used directly as wet fraction (0 = dry, 1 = fully ring-modulated)
-        const float wetLevel = d;
+        rmSmoothedCarrierHz.setTargetValue(carrierHz);
 
-        const double phaseIncrement = (juce::MathConstants<double>::twoPi * carrierHz)
-                                      / getSampleRate();
+        // Upsample — osBlock points to internal oversampling memory
+        auto inputBlock = juce::dsp::AudioBlock<float>(buffer);
+        auto osBlock    = rmOversampling.processSamplesUp(inputBlock);
 
-        const int numSamples  = buffer.getNumSamples();
-        const int numChannels = buffer.getNumChannels();
+        const int osNumSamples = static_cast<int>(osBlock.getNumSamples());
+        const int numChannels  = static_cast<int>(osBlock.getNumChannels());
 
-        for (int n = 0; n < numSamples; ++n)
+        for (int n = 0; n < osNumSamples; ++n)
         {
-            // Carrier computed once per sample, shared across channels
-            const float carrier = std::sin(rmPhase);
+            // Smoothed carrier Hz — advances ramp once per oversampled sample
+            const float currentHz = rmSmoothedCarrierHz.getNextValue();
+            const float carrier   = std::sin(rmPhase);
 
             for (int ch = 0; ch < numChannels; ++ch)
             {
-                const float inputSample = buffer.getSample(ch, n);
+                const float inputSample = osBlock.getSample(ch, n);
 
-                // Mix feedback into input before modulation
-                const float modInput = inputSample + rmFeedbackGain * rmFeedbackState[ch];
-
-                // Ring modulate
+                // Tanh saturation on feedback: smoothly bounded, warm character
+                const float modInput  = inputSample + std::tanh(rmFeedbackGain * rmFeedbackState[ch]);
                 const float wetSample = modInput * carrier;
+                rmFeedbackState[ch]   = wetSample;
 
-                // Update feedback state
-                rmFeedbackState[ch] = wetSample;
+                const float outSample = (1.0f - wetLevel) * inputSample + wetLevel * wetSample;
 
-                // Wet/dry blend
-                buffer.setSample(ch, n, (1.0f - wetLevel) * inputSample + wetLevel * wetSample);
+                // DC blocker (one-pole highpass, cutoff ~3.5 Hz at 44100 Hz)
+                const float dcOut = outSample - rmDCBlockX[ch] + 0.9995f * rmDCBlockY[ch];
+                rmDCBlockX[ch] = outSample;
+                rmDCBlockY[ch] = dcOut;
+
+                osBlock.setSample(ch, n, dcOut);
             }
 
-            // Advance phase; subtract rather than fmod for speed
-            rmPhase += static_cast<float>(phaseIncrement);
-            if (rmPhase >= juce::MathConstants<float>::twoPi)
-                rmPhase -= juce::MathConstants<float>::twoPi;
+            rmPhase += static_cast<float>(twoPi * currentHz / osRate);
+            if (rmPhase >= twoPi)
+                rmPhase -= twoPi;
         }
+
+        // Downsample back into buffer
+        rmOversampling.processSamplesDown(inputBlock);
     }
 }
 
