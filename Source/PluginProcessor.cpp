@@ -165,6 +165,14 @@ void CSC475pitch_effectanalyzerAudioProcessor::prepareToPlay (double sampleRate,
     rmSmoothedCarrierHz.setCurrentAndTargetValue(20.0f);
     rmDCBlockX[0] = rmDCBlockX[1] = 0.0f;
     rmDCBlockY[0] = rmDCBlockY[1] = 0.0f;
+
+    // Reset harmonic ring mod state
+    hrmPhase = 0.0f;
+    hrmLfoPhase = 0.0f;
+    hrmSmoothedCarrierHz.reset(osRate, 0.05);
+    hrmSmoothedCarrierHz.setCurrentAndTargetValue(20.0f);
+    hrmDCBlockX[0] = hrmDCBlockX[1] = 0.0f;
+    hrmDCBlockY[0] = hrmDCBlockY[1] = 0.0f;
 }
 
 void CSC475pitch_effectanalyzerAudioProcessor::releaseResources()
@@ -360,6 +368,81 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
 
         // Downsample back into buffer
         rmOversampling.processSamplesDown(inputBlock);
+
+    } else if (effectIndex == 3) // Harmonic Ring Mod
+    {
+        // Rate → base carrier frequency (same exponential remap as ring mod)
+        const float rNorm     = (r - 0.1f) / 1.9f;
+        const float carrierHz = 20.0f * std::pow(100.0f, rNorm);
+
+        // Feedback → LFO sweep depth: 0 = static, ±0.25 = ±50% carrier frequency sweep
+        const float lfoDepth   = std::abs(f) * 2.0f;
+        const float lfoRate    = 0.3f; // Hz, fixed
+
+        const float twoPi  = juce::MathConstants<float>::twoPi;
+        const double osRate = getSampleRate() * rmOversampling.getOversamplingFactor();
+
+        hrmSmoothedCarrierHz.setTargetValue(carrierHz);
+
+        auto inputBlock = juce::dsp::AudioBlock<float>(buffer);
+        auto osBlock    = rmOversampling.processSamplesUp(inputBlock);
+
+        const int osNumSamples  = static_cast<int>(osBlock.getNumSamples());
+        const int numChannels   = static_cast<int>(osBlock.getNumChannels());
+        const float lfoPhaseInc = twoPi * lfoRate / static_cast<float>(osRate);
+
+        for (int n = 0; n < osNumSamples; ++n)
+        {
+            const float currentHz = hrmSmoothedCarrierHz.getNextValue();
+
+            // LFO proportionally sweeps carrier frequency
+            const float actualHz = juce::jlimit(20.0f, 2000.0f,
+                currentHz * (1.0f + lfoDepth * std::sin(hrmLfoPhase)));
+
+            // Piecewise triangle wave — odd harmonics, 1/n² rolloff, no asin needed
+            auto triangleAt = [](float phase, float tp) -> float
+            {
+                const float t = phase / tp;
+                if (t < 0.25f) return  4.0f * t;
+                if (t < 0.75f) return  2.0f - 4.0f * t;
+                return                 4.0f * t - 4.0f;
+            };
+
+            const float triL = triangleAt(hrmPhase, twoPi);
+
+            // Right channel: 90° lead for stereo width without multi-carrier overhead
+            float quadPhase = hrmPhase + twoPi * 0.25f;
+            if (quadPhase >= twoPi) quadPhase -= twoPi;
+            const float triR = triangleAt(quadPhase, twoPi);
+
+            // Depth → AM/RM blend: d=0 pure ring mod [-1..1], d=1 pure AM [0..1]
+            // modCarrier = tri * (1 - d*0.5) + d*0.5
+            const float amScale  = 1.0f - d * 0.5f;
+            const float amOffset = d * 0.5f;
+            const float modL = triL * amScale + amOffset;
+            const float modR = triR * amScale + amOffset;
+
+            for (int ch = 0; ch < numChannels; ++ch)
+            {
+                const float inputSample = osBlock.getSample(ch, n);
+                const float outSample   = inputSample * ((ch == 0) ? modL : modR);
+
+                // DC blocker (one-pole highpass, cutoff ~3.5 Hz at 44100 Hz)
+                const float dcOut = outSample - hrmDCBlockX[ch] + 0.9995f * hrmDCBlockY[ch];
+                hrmDCBlockX[ch] = outSample;
+                hrmDCBlockY[ch] = dcOut;
+
+                osBlock.setSample(ch, n, dcOut);
+            }
+
+            hrmPhase += static_cast<float>(twoPi * actualHz / osRate);
+            if (hrmPhase >= twoPi) hrmPhase -= twoPi;
+
+            hrmLfoPhase += lfoPhaseInc;
+            if (hrmLfoPhase >= twoPi) hrmLfoPhase -= twoPi;
+        }
+
+        rmOversampling.processSamplesDown(inputBlock);
     }
 }
 
@@ -404,7 +487,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CSC475pitch_effectanalyzerAu
     param_layout.add(std::make_unique<AudioParameterFloat>("rate", "Rate", NormalisableRange<float>(0.1f, 2.0f, 0.001f, 1.0f), 0.1));
     param_layout.add(std::make_unique<AudioParameterFloat>("depth", "Depth", NormalisableRange<float>(0.0f, 1.0f, 0.001f, 1.0f), 0.25));
     param_layout.add(std::make_unique<AudioParameterFloat>("feedback", "Feedback", NormalisableRange<float>(-0.25f, 0.25f, 0.001f, 1.0f), 0));
-    param_layout.add(std::make_unique<AudioParameterChoice>("effect", "Effect Type Choice", StringArray("Chorus", "Multi-Voice Chorus", "Ring Modulator"), 0));
+    param_layout.add(std::make_unique<AudioParameterChoice>("effect", "Effect Type Choice", StringArray("Chorus", "Multi-Voice Chorus", "Ring Modulator", "Harmonic Ring Mod"), 0));
 
     // return layout
     return param_layout;

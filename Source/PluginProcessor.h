@@ -71,9 +71,16 @@ private:
     float rmPhase { 0.0f };
     float rmFeedbackState[2] { 0.0f, 0.0f };
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Multiplicative> rmSmoothedCarrierHz;
-    float rmDCBlockX[2] { 0.0f, 0.0f };   // DC blocker: previous input per channel
-    float rmDCBlockY[2] { 0.0f, 0.0f };   // DC blocker: previous output per channel
+    float rmDCBlockX[2] { 0.0f, 0.0f };
+    float rmDCBlockY[2] { 0.0f, 0.0f };
     juce::dsp::Oversampling<float> rmOversampling { 2, 1, juce::dsp::Oversampling<float>::filterHalfBandPolyphaseIIR };
+
+    // harmonic ring mod stuff
+    float hrmPhase { 0.0f };
+    float hrmLfoPhase { 0.0f };
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Multiplicative> hrmSmoothedCarrierHz;
+    float hrmDCBlockX[2] { 0.0f, 0.0f };
+    float hrmDCBlockY[2] { 0.0f, 0.0f };
 
     //general things
     juce::AudioParameterFloat* rate{ nullptr };
