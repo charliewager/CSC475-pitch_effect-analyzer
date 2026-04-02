@@ -1,14 +1,13 @@
 /*
   ==============================================================================
 
-    This file contains the basic framework code for a JUCE plugin editor.
+
 
   ==============================================================================
 */
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-
 //==============================================================================
 CSC475pitch_effectanalyzerAudioProcessorEditor::CSC475pitch_effectanalyzerAudioProcessorEditor (CSC475pitch_effectanalyzerAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
@@ -94,6 +93,15 @@ CSC475pitch_effectanalyzerAudioProcessorEditor::CSC475pitch_effectanalyzerAudioP
     addAndMakeVisible(outputSpectrum);
     setSize(900, 620);
     startTimerHz(30);
+    inputChordLabel.setText("Input: N/C", juce::dontSendNotification);
+    inputChordLabel.setColour(juce::Label::textColourId, juce::Colours::white);
+    inputChordLabel.setFont(juce::FontOptions(20.f, juce::Font::bold));
+    addAndMakeVisible(inputChordLabel);
+
+    outputChordLabel.setText("Output: N/C", juce::dontSendNotification);
+    outputChordLabel.setColour(juce::Label::textColourId, juce::Colours::yellow);
+    outputChordLabel.setFont(juce::FontOptions(20.f, juce::Font::bold));
+    addAndMakeVisible(outputChordLabel);
 
 }
 
@@ -157,7 +165,10 @@ void CSC475pitch_effectanalyzerAudioProcessorEditor::resized()
     knobArea.removeFromTop(pad);
     effect.setBounds(knobArea.getCentreX() - dropdownW / 2,
                      knobArea.getY(),
-                     dropdownW, dropdownH);
+                     dropdownW, dropdownH);    
+    inputChordLabel.setBounds(10, getHeight() - 60, 200, 30);
+    outputChordLabel.setBounds(10, getHeight() - 30, 200, 30);
+
 }
 
 void CSC475pitch_effectanalyzerAudioProcessorEditor::timerCallback()
@@ -181,4 +192,13 @@ void CSC475pitch_effectanalyzerAudioProcessorEditor::timerCallback()
     if (audioProcessor.getLatestOutputMagnitudes(outputMags)) {
         outputSpectrum.setMagnitudes(outputMags);
     }
+    ChordResult inputResult;
+    if (audioProcessor.inputChordRecognizer->popResult(inputResult))
+        inputChordLabel.setText("Input: " + inputResult.chordName,
+                                 juce::dontSendNotification);
+
+    ChordResult outputResult;
+    if (audioProcessor.outputChordRecognizer->popResult(outputResult))
+        outputChordLabel.setText("Output: " + outputResult.chordName,
+                                  juce::dontSendNotification);
 }

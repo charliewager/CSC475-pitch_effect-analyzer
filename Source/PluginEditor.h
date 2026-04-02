@@ -12,6 +12,8 @@
 #include "PluginProcessor.h"
 #include "SpectrumComponent.h"
 #include "SpectrogramComponent.h"
+#include "ChordRecognizer.hpp"
+
 
 //==============================================================================
 /**
@@ -35,6 +37,8 @@ private:
     SpectrogramComponent inputSpectrogram;
     void timerCallback() override;
 
+    juce::Label inputChordLabel;
+    juce::Label outputChordLabel;
 
     // knobs and attachments 
     juce::Slider rate_knob{ juce::Slider::SliderStyle::Rotary, juce::Slider::TextEntryBoxPosition::TextBoxBelow };

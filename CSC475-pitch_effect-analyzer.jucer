@@ -5,6 +5,10 @@
               companyName="UVIC CSC475">
   <MAINGROUP id="BiLPgM" name="CSC475-pitch_effect-analyzer">
     <GROUP id="{DC9EC6E2-A014-4ED9-AB53-7473C20F4EDF}" name="Source">
+      <FILE id="lpJNYz" name="ChordRecognizer.hpp" compile="0" resource="0"
+            file="Source/ChordRecognizer.hpp"/>
+      <FILE id="p3tNbz" name="ChordRecognizer.cpp" compile="1" resource="0"
+            file="Source/ChordRecognizer.cpp"/>
       <FILE id="kxCKvf" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="iNcUOq" name="PluginProcessor.h" compile="0" resource="0"
@@ -21,6 +25,8 @@
     <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
             useGlobalPath="1"/>
     <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors_headless" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
     <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
@@ -52,6 +58,7 @@
         <MODULEPATH id="juce_graphics" path="../../../../JUCE/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../../../../JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors_headless" path="../../../csc475/JUCE/modules"/>
       </MODULEPATHS>
     </VS2022>
     <XCODE_MAC targetFolder="Builds/MacOSX">
@@ -73,6 +80,7 @@
         <MODULEPATH id="juce_graphics" path="../../../../JUCE/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../../../../JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors_headless" path="../../../csc475/JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
   </EXPORTFORMATS>

@@ -173,6 +173,8 @@ void CSC475pitch_effectanalyzerAudioProcessor::prepareToPlay (double sampleRate,
     hrmSmoothedCarrierHz.setCurrentAndTargetValue(20.0f);
     hrmDCBlockX[0] = hrmDCBlockX[1] = 0.0f;
     hrmDCBlockY[0] = hrmDCBlockY[1] = 0.0f;
+    inputChordRecognizer  = std::make_unique<ChordRecognizer>(sampleRate, fftSize);
+    outputChordRecognizer = std::make_unique<ChordRecognizer>(sampleRate, fftSize);
 }
 
 void CSC475pitch_effectanalyzerAudioProcessor::releaseResources()
@@ -254,6 +256,8 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
                 }
 
                 magsVersion.fetch_add(1, std::memory_order_acq_rel);
+                std::vector<float> inputMags(magnitudes.begin(), magnitudes.end());
+                inputChordRecognizer->update(inputMags);
             }
         }
 
@@ -509,6 +513,8 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
                     outputMagnitudes[(size_t) k] = outputFftData[(size_t) k];
                 }
                 outputMagsVersion.fetch_add(1, std::memory_order_acq_rel);
+                std::vector<float> outMags(outputMagnitudes.begin(), outputMagnitudes.end());
+                outputChordRecognizer->update(outMags);
             }
         }
     }
@@ -603,4 +609,7 @@ bool CSC475pitch_effectanalyzerAudioProcessor::getLatestOutputMagnitudes(std::ar
         }
     }
     return false;
+    //==============================================================================
+    
+    
 }
