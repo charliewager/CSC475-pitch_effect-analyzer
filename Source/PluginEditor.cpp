@@ -92,7 +92,7 @@ CSC475pitch_effectanalyzerAudioProcessorEditor::CSC475pitch_effectanalyzerAudioP
     addAndMakeVisible(inputSpectrum);
     addAndMakeVisible(inputSpectrogram);
     addAndMakeVisible(outputSpectrum);
-    setSize(600, 400);
+    setSize(900, 620);
     startTimerHz(30);
 
 }
@@ -104,112 +104,72 @@ CSC475pitch_effectanalyzerAudioProcessorEditor::~CSC475pitch_effectanalyzerAudio
 //==============================================================================
 void CSC475pitch_effectanalyzerAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll(juce::Colours::darkgrey);
-
     g.setColour(juce::Colours::white);
-    g.setFont(16.0f);
+    g.setFont(14.0f);
 
-    auto area = getLocalBounds().reduced(20);
-    auto left = area.removeFromLeft(area.getWidth() / 2);
-    auto right = area;
+    const int pad = 10;
+    auto area = getLocalBounds().reduced(pad);
+    area.removeFromBottom(static_cast<int>(area.getHeight() * 0.4f));
 
-    g.drawText("Input Spectrum", left.removeFromTop(5), juce::Justification::centred);
-    g.drawText("Output Spectrum", right.removeFromTop(5), juce::Justification::centred);
+    const int totalWidth = area.getWidth();
+    auto leftCol  = area.removeFromLeft (static_cast<int>(totalWidth * 0.25f));
+    auto rightCol = area.removeFromRight(static_cast<int>(totalWidth * 0.25f));
+
+    g.drawText("Input Spectrum",  leftCol .removeFromTop(20), juce::Justification::centred);
+    g.drawText("Output Spectrum", rightCol.removeFromTop(20), juce::Justification::centred);
 }
 
 void CSC475pitch_effectanalyzerAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
-    auto area = getLocalBounds().reduced(20);
+    const int pad = 10;
+    const int labelHeight = 20;
 
-    auto top = area.removeFromTop(area.getHeight() / 2);
-    auto bottom = area;
+    auto area = getLocalBounds().reduced(pad);
 
-    auto leftTop = top.removeFromLeft(top.getWidth() / 2).reduced(10);
-    auto rightTop = top.reduced(10);
+    // Bottom 40%: scrolling spectrogram
+    auto spectrogramArea = area.removeFromBottom(static_cast<int>(area.getHeight() * 0.4f));
+    inputSpectrogram.setBounds(spectrogramArea.reduced(pad));
 
-    inputSpectrum.setBounds(leftTop);
-    outputSpectrum.setBounds(rightTop);
+    // Top 60%: input spectrum | knob grid | output spectrum
+    const int totalWidth = area.getWidth();
+    auto inputSpectrumArea  = area.removeFromLeft (static_cast<int>(totalWidth * 0.25f));
+    auto outputSpectrumArea = area.removeFromRight(static_cast<int>(totalWidth * 0.25f));
+    auto knobArea           = area; // middle 50%
 
-    inputSpectrogram.setBounds(bottom.reduced(10));
+    inputSpectrum .setBounds(inputSpectrumArea .reduced(pad));
+    outputSpectrum.setBounds(outputSpectrumArea.reduced(pad));
 
+    // Knob area: headroom for attached labels, then 3 knobs, then dropdown
+    knobArea.removeFromTop(labelHeight);
+    knobArea = knobArea.reduced(pad);
+
+    const int dropdownH = 35;
+    const int dropdownW = 220;
+    const int knobH     = knobArea.getHeight() - dropdownH - pad;
+    const int knobW     = knobArea.getWidth() / 3;
+
+    auto knobRow = knobArea.removeFromTop(knobH);
+    rate_knob    .setBounds(knobRow.removeFromLeft(knobW).reduced(4));
+    depth_knob   .setBounds(knobRow.removeFromLeft(knobW).reduced(4));
+    feedback_knob.setBounds(knobRow.reduced(4));
+
+    knobArea.removeFromTop(pad);
+    effect.setBounds(knobArea.getCentreX() - dropdownW / 2,
+                     knobArea.getY(),
+                     dropdownW, dropdownH);
 }
 
 void CSC475pitch_effectanalyzerAudioProcessorEditor::timerCallback()
 {
-  std::array<float, CSC475pitch_effectanalyzerAudioProcessor::fftSize / 2> mags;
-  std::array<float, CSC475pitch_effectanalyzerAudioProcessor::fftSize / 2> outputMags;
+    std::array<float, CSC475pitch_effectanalyzerAudioProcessor::fftSize / 2> mags;
+    std::array<float, CSC475pitch_effectanalyzerAudioProcessor::fftSize / 2> outputMags;
 
-  if (audioProcessor.getLatestMagnitudes(mags)){
-    inputSpectrum.setMagnitudes(mags);
-    inputSpectrogram.pushMagnitudes(mags);
-
-  }
-  if (audioProcessor.getLatestOutputMagnitudes(outputMags)){
-      outputSpectrum.setMagnitudes(outputMags);
-  }
-  // auto lv = audioProcessor.inputRms.load(std::memory_order_relaxed);
-  // DBG("RMS: " << lv);
-  // inputSpectrum.setLevel(lv);
-
-    // Flexbox for over all layout
-    juce::FlexBox overall;
-    // grid for knob layout
-    juce::FlexBox knob_grid;
-    // flex for input spectrum section
-    juce::FlexBox input_spectrum_box;
-    // flex for output spectrum container
-    juce::FlexBox output_spectrum_box;
-
-    auto bound = getLocalBounds();
-    using fi = juce::FlexItem;
-
-    //create compressor param knob grid
-    knob_grid.flexDirection = juce::FlexBox::Direction::row;
-    knob_grid.flexWrap = juce::FlexBox::Wrap::wrap;
-    knob_grid.justifyContent = juce::FlexBox::JustifyContent::spaceAround;
-    knob_grid.alignContent = juce::FlexBox::AlignContent::spaceAround;
-    //add items
-    float grid_item_h = bound.getHeight() / 3.75;
-    float grid_item_w = (bound.getWidth() * 0.6) / 3.75;
-
-    knob_grid.items = { juce::FlexItem(rate_knob).withWidth(grid_item_w).withHeight(grid_item_h).withMargin(juce::FlexItem::Margin(0.0, 20.0, 0.0, 20.0)),
-                        juce::FlexItem(depth_knob).withWidth(grid_item_w).withHeight(grid_item_h).withMargin(juce::FlexItem::Margin(0.0, 20.0, 0.0, 20.0)),
-                        juce::FlexItem(feedback_knob).withWidth(grid_item_w).withHeight(grid_item_h).withMargin(juce::FlexItem::Margin(0.0, 20.0, 0.0, 20.0)),
-                        juce::FlexItem(effect).withWidth(grid_item_w).withHeight(grid_item_h).withMargin(juce::FlexItem::Margin(0.0, 20.0, 0.0, 20.0))
-    };
-
-    //input spectrum strip layout
-    input_spectrum_box.flexDirection = juce::FlexBox::Direction::column;
-    input_spectrum_box.flexWrap = juce::FlexBox::Wrap::wrap;
-    input_spectrum_box.justifyContent = juce::FlexBox::JustifyContent::spaceAround;
-    input_spectrum_box.alignContent = juce::FlexBox::AlignContent::spaceAround;
-
-    input_spectrum_box.items = { juce::FlexItem(input_lable).withWidth(bound.getWidth() * 0.175).withHeight(bound.getHeight() * 0.15)
-
-    };
-
-    //output spectrum layout
-    output_spectrum_box.flexDirection = juce::FlexBox::Direction::row;
-    output_spectrum_box.flexWrap = juce::FlexBox::Wrap::wrap;
-    output_spectrum_box.justifyContent = juce::FlexBox::JustifyContent::center;
-    output_spectrum_box.alignContent = juce::FlexBox::AlignContent::center;
-
-
-
-    output_spectrum_box.items = { juce::FlexItem(output_lable).withWidth(bound.getWidth() * 0.150).withHeight(bound.getHeight() * 0.35) };
-
-    //make overall layout
-    overall.flexWrap = juce::FlexBox::Wrap::noWrap;
-    overall.justifyContent = juce::FlexBox::JustifyContent::spaceAround;
-    overall.alignContent = juce::FlexBox::AlignContent::spaceAround;
-
-    overall.items = { juce::FlexItem(input_spectrum_box).withFlex(0.175f).withMargin(juce::FlexItem::Margin(0.0, 0.0, 0.0, 50.0)),
-                      juce::FlexItem(knob_grid).withFlex(0.65f).withMargin(juce::FlexItem::Margin(0.0, 15.0, 0.0, 15.0)),
-                      juce::FlexItem(output_spectrum_box).withFlex(0.150f).withMargin(juce::FlexItem::Margin(125.0, 50.0, 125.0, 25.0))
-    };
-
-    overall.performLayout(getLocalBounds());
+    if (audioProcessor.getLatestMagnitudes(mags)) {
+        inputSpectrum.setMagnitudes(mags);
+        inputSpectrogram.pushMagnitudes(mags);
+    }
+    if (audioProcessor.getLatestOutputMagnitudes(outputMags)) {
+        outputSpectrum.setMagnitudes(outputMags);
+    }
 }
