@@ -59,7 +59,41 @@ public:
     bool getLatestMagnitudes (std::array<float, fftSize / 2>& dest) const;
     bool getLatestOutputMagnitudes (std::array<float, fftSize / 2>& dest) const;
 
+    using APVTS = juce::AudioProcessorValueTreeState;
+    static APVTS::ParameterLayout createParameterLayout();
+
+    APVTS apvts{ *this, nullptr, "Parameters", createParameterLayout() };
+
 private:
+    
+    // chorus things
+    static constexpr int numVoices = 6;
+    juce::dsp::Chorus<float> chorusVoices[numVoices];
+
+    juce::AudioBuffer<float> dryBuffer;
+    juce::AudioBuffer<float> voiceBuffer;
+
+    // ring mod stuff
+    float rmPhase { 0.0f };
+    float rmFeedbackState[2] { 0.0f, 0.0f };
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Multiplicative> rmSmoothedCarrierHz;
+    float rmDCBlockX[2] { 0.0f, 0.0f };
+    float rmDCBlockY[2] { 0.0f, 0.0f };
+    juce::dsp::Oversampling<float> rmOversampling { 2, 1, juce::dsp::Oversampling<float>::filterHalfBandPolyphaseIIR };
+
+    // harmonic ring mod stuff
+    float hrmPhase { 0.0f };
+    float hrmLfoPhase { 0.0f };
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Multiplicative> hrmSmoothedCarrierHz;
+    float hrmDCBlockX[2] { 0.0f, 0.0f };
+    float hrmDCBlockY[2] { 0.0f, 0.0f };
+
+    //general things
+    juce::AudioParameterFloat* rate{ nullptr };
+    juce::AudioParameterFloat* depth{ nullptr };
+    juce::AudioParameterFloat* feedback{ nullptr };
+    juce::AudioParameterChoice* effect{ nullptr };
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CSC475pitch_effectanalyzerAudioProcessor)
 

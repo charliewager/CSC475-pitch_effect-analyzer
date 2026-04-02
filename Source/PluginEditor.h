@@ -36,5 +36,24 @@ private:
     void timerCallback() override;
 
 
+    // knobs and attachments 
+    juce::Slider rate_knob{ juce::Slider::SliderStyle::Rotary, juce::Slider::TextEntryBoxPosition::TextBoxBelow };
+    juce::Label r_label;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> rateAttachment;
+
+    juce::Slider depth_knob{ juce::Slider::SliderStyle::Rotary, juce::Slider::TextEntryBoxPosition::TextBoxBelow };
+    juce::Label d_label;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> depthAttachment;
+
+    juce::Slider feedback_knob{ juce::Slider::SliderStyle::Rotary, juce::Slider::TextEntryBoxPosition::TextBoxBelow };
+    juce::Label f_label;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> feedbackAttachment;
+
+    juce::ComboBox effect;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> effectAttachment;
+
+    juce::Label input_lable;
+    juce::Label output_lable;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CSC475pitch_effectanalyzerAudioProcessorEditor)
 };
