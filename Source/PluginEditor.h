@@ -55,5 +55,7 @@ private:
     juce::Label input_lable;
     juce::Label output_lable;
 
+    double lastSampleRate { 0.0 };
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CSC475pitch_effectanalyzerAudioProcessorEditor)
 };

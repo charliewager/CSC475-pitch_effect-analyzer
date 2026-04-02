@@ -162,6 +162,15 @@ void CSC475pitch_effectanalyzerAudioProcessorEditor::resized()
 
 void CSC475pitch_effectanalyzerAudioProcessorEditor::timerCallback()
 {
+    // Forward sample rate to spectrum components whenever it changes
+    const double sr = audioProcessor.getSampleRate();
+    if (sr > 0.0 && sr != lastSampleRate)
+    {
+        lastSampleRate = sr;
+        inputSpectrum.setSampleRate(sr);
+        outputSpectrum.setSampleRate(sr);
+    }
+
     std::array<float, CSC475pitch_effectanalyzerAudioProcessor::fftSize / 2> mags;
     std::array<float, CSC475pitch_effectanalyzerAudioProcessor::fftSize / 2> outputMags;
 
