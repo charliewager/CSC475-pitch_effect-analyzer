@@ -78,20 +78,12 @@ CSC475pitch_effectanalyzerAudioProcessorEditor::CSC475pitch_effectanalyzerAudioP
         effect
     );
 
-    input_lable.setText("Input Spectrum and chord", juce::dontSendNotification);
-    input_lable.setJustificationType(juce::Justification::centred);
-    addAndMakeVisible(input_lable);
-
-    output_lable.setText("Output Spectrum and chord", juce::dontSendNotification);
-    output_lable.setJustificationType(juce::Justification::centred);
-    addAndMakeVisible(output_lable);
-
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     addAndMakeVisible(inputSpectrum);
     addAndMakeVisible(inputSpectrogram);
     addAndMakeVisible(outputSpectrum);
-    setSize(900, 620);
+    setSize(900, 660);
     startTimerHz(30);
     inputChordLabel.setText("Input: N/C", juce::dontSendNotification);
     inputChordLabel.setColour(juce::Label::textColourId, juce::Colours::white);
@@ -113,19 +105,6 @@ CSC475pitch_effectanalyzerAudioProcessorEditor::~CSC475pitch_effectanalyzerAudio
 void CSC475pitch_effectanalyzerAudioProcessorEditor::paint (juce::Graphics& g)
 {
     g.fillAll(juce::Colours::darkgrey);
-    g.setColour(juce::Colours::white);
-    g.setFont(14.0f);
-
-    const int pad = 10;
-    auto area = getLocalBounds().reduced(pad);
-    area.removeFromBottom(static_cast<int>(area.getHeight() * 0.4f));
-
-    const int totalWidth = area.getWidth();
-    auto leftCol  = area.removeFromLeft (static_cast<int>(totalWidth * 0.25f));
-    auto rightCol = area.removeFromRight(static_cast<int>(totalWidth * 0.25f));
-
-    g.drawText("Input Spectrum",  leftCol .removeFromTop(20), juce::Justification::centred);
-    g.drawText("Output Spectrum", rightCol.removeFromTop(20), juce::Justification::centred);
 }
 
 void CSC475pitch_effectanalyzerAudioProcessorEditor::resized()
@@ -135,8 +114,14 @@ void CSC475pitch_effectanalyzerAudioProcessorEditor::resized()
 
     auto area = getLocalBounds().reduced(pad);
 
-    // Bottom 40%: scrolling spectrogram
+    // Bottom 40%: scrolling spectrogram + chord label row
     auto spectrogramArea = area.removeFromBottom(static_cast<int>(area.getHeight() * 0.4f));
+
+    // Chord labels below spectrogram, split left (input) / right (output)
+    auto chordLabelArea = spectrogramArea.removeFromBottom(28);
+    inputChordLabel .setBounds(chordLabelArea.removeFromLeft(chordLabelArea.getWidth() / 2));
+    outputChordLabel.setBounds(chordLabelArea);
+
     inputSpectrogram.setBounds(spectrogramArea.reduced(pad));
 
     // Top 60%: input spectrum | knob grid | output spectrum
@@ -165,9 +150,7 @@ void CSC475pitch_effectanalyzerAudioProcessorEditor::resized()
     knobArea.removeFromTop(pad);
     effect.setBounds(knobArea.getCentreX() - dropdownW / 2,
                      knobArea.getY(),
-                     dropdownW, dropdownH);    
-    inputChordLabel.setBounds(10, getHeight() - 60, 200, 30);
-    outputChordLabel.setBounds(10, getHeight() - 30, 200, 30);
+                     dropdownW, dropdownH);
 
 }
 
@@ -192,6 +175,7 @@ void CSC475pitch_effectanalyzerAudioProcessorEditor::timerCallback()
     if (audioProcessor.getLatestOutputMagnitudes(outputMags)) {
         outputSpectrum.setMagnitudes(outputMags);
     }
+
     ChordResult inputResult;
     if (audioProcessor.inputChordRecognizer->popResult(inputResult))
         inputChordLabel.setText("Input: " + inputResult.chordName,
