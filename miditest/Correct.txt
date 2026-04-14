@@ -1,0 +1,27 @@
+MajorChords.mid
+Cmaj  = C E G
+C#maj = C# F G#
+Dmaj  = D F# A
+D#maj = D# G A#
+Emaj  = E G# B
+Fmaj  = F A C
+F#maj = F# A# C#
+Gmaj  = G B D
+G#maj = G# C D#
+Amaj  = A C# E
+A#maj = A# D F
+Bmaj  = B D# F#
+
+MinorChords.mid
+Cmin  = C D# G
+C#min = C# E G#
+Dmin  = D F A
+D#min = D# F# A#
+Emin  = E G B
+Fmin  = F G# C
+F#min = F# A C#
+Gmin  = G A# D
+G#min = G# B D#
+Amin  = A C E
+A#min = A# C# F
+Bmin  = B D F#
