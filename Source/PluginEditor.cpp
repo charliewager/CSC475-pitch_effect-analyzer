@@ -95,6 +95,10 @@ CSC475pitch_effectanalyzerAudioProcessorEditor::CSC475pitch_effectanalyzerAudioP
     outputChordLabel.setFont(juce::FontOptions(20.f, juce::Font::bold));
     addAndMakeVisible(outputChordLabel);
 
+    outputChordLabel.setText("Output: N/C", juce::dontSendNotification);
+    outputChordLabel.setColour(juce::Label::textColourId, juce::Colours::yellow);
+    outputChordLabel.setFont(juce::FontOptions(20.f, juce::Font::bold));
+    addAndMakeVisible(outputChordLabel);
 }
 
 CSC475pitch_effectanalyzerAudioProcessorEditor::~CSC475pitch_effectanalyzerAudioProcessorEditor()
