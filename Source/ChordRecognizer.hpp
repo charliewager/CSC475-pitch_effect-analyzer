@@ -50,8 +50,19 @@ private:
     juce::AbstractFifo   fifo      { queueSize };
     ChordResult          queue[queueSize];
 
+    // Temporal smoothing / hysteresis state
+    ChromaVector smoothedChroma   = {};
+    bool         hasSmoothedFrame = false;
+    int          stableTemplateIndex = -1;
+    int          pendingTemplateIndex = -1;
+    int          pendingFrames = 0;
+    int          uncertainFrames = 0;
+    float        stableConfidence = 0.f;
+
     void         pushToQueue      (const ChordResult& result);
     ChromaVector extractChroma    (const std::vector<float>& fftMagnitudes);
     float        cosineSimilarity (const ChromaVector& a, const ChromaVector& b);
+    float        scoreTemplate    (const ChromaVector& chroma, const ChordTemplate& chord) const;
+    void         smoothChromaInPlace(ChromaVector& chroma) const;
     void         buildTemplates   ();
 };
