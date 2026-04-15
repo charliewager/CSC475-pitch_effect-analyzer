@@ -494,21 +494,21 @@ void CSC475pitch_effectanalyzerAudioProcessor::processBlock (juce::AudioBuffer<f
     if (totalNumOutputChannels > 0){
         const float* y = buffer.getReadPointer(0);
         const int n = buffer.getNumSamples();
-        
+
         for (int i = 0; i < n; ++i){
             outputFifo[(size_t) outputFifoIndex++] = y[i];
-            
+
             if (outputFifoIndex == fftSize){
                 outputFifoIndex = 0;
                 std::fill(outputFftData.begin() , outputFftData.end(), 0.0f);
-                
+
                 for (int j = 0; j<fftSize; ++j){
                     outputFftData[(size_t) j] = outputFifo[(size_t) j];
                 }
                 window.multiplyWithWindowingTable(outputFftData.data(), fftSize);
                 fft.performFrequencyOnlyForwardTransform(outputFftData.data());
                 outputMagsVersion.fetch_add(1, std::memory_order_acq_rel);
-                
+
                 for (int k = 0; k<fftSize/2; ++k){
                     outputMagnitudes[(size_t) k] = outputFftData[(size_t) k];
                 }
